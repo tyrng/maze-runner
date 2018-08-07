@@ -19,6 +19,10 @@ from mouse import RandomMouse
 class Maze(Tk.Canvas):
 
     def __init__(self, frame):
+        #Genetic Algorithm trigger
+        self.G_ALGORITHM = ''    
+                
+        
         self._frame = frame
         self._cells = [[Cell(x, y) for y in xrange(YCELLS)] \
                        for x in xrange(XCELLS)]
@@ -50,7 +54,7 @@ class Maze(Tk.Canvas):
         self.update_idletasks()
         self.prompt_build()
 
-    def _run(self):
+    def _run(self):     #runs solution
         if not self._walker.is_done():
             self._walker.step()
             self.after(self._walker.delay(), self._run)
@@ -77,6 +81,15 @@ class Maze(Tk.Canvas):
     def prompt(self):
         """Get user input after the maze has been built"""
         
+        #=================Genetic algorithm mode===============#
+        if(self.G_ALGORITHM == 'f' or self.G_ALGORITHM == 'a'):       
+            #get solution
+            num1 = 0
+        
+        
+        
+        
+        #======================================================#        
         classes = {'d': DepthWalker, 'b': BreadthWalker, 'f': DeadendFiller, \
                    't': Tremaux, 'm': RandomMouse}
         while True:
@@ -91,12 +104,15 @@ class Maze(Tk.Canvas):
             
             choice = raw_input(">> ").strip().lower()
             
+            if choice == 'f':
+                self.G_ALGORITHM = choice 
+
+            
             if choice == 'q':
                 raise SystemExit
             elif choice == 'r':
                 self.rebuild()
-                return
-
+                return            
             try:
                 #import pdb; pdb.set_trace()
                 walkClass = classes[choice]

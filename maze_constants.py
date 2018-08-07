@@ -28,5 +28,4 @@ DIRECTIONS = ['north', 'east', 'south', 'west']
 OPPOSITES = {'north': 'south', 'east': 'west', 'south': 'north', \
              'west': 'east'}
 
-#Genetic Algorithm trigger
-G_ALGORITHM = ['f', 'a']
+
