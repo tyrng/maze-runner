@@ -44,7 +44,7 @@ class DepthWalker(walker_base.WalkerBase):
 
         if len(paths) == 0:
             # We've found a deadend essentially
-            self.paint(current, VISITED_COLOR)
+            self.paint(current, VISITED_COLOR)                            
             self._stack.pop()
             return
 

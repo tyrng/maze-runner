@@ -54,7 +54,8 @@ class BreadthWalker(walker_base.WalkerBase):
 
         if current is marker:
             self.queue.append(marker)
-            SEARCH_COLORS.next()
+            SEARCH_COLORS.next()            
+            
         elif current is self._maze.finish():
             while current is not None:
                 # Start cell should point to None
@@ -62,7 +63,8 @@ class BreadthWalker(walker_base.WalkerBase):
                 current = self.read_map(current).previous
             self._isDone = True
         else:
-            self._maze.paint(current, SEARCH_COLORS.color())
+            self._maze.paint(current, SEARCH_COLORS.color())            
+            
             for next in current.get_paths(last=self.read_map(current).previous):
                 if self.read_map(next).previous is None:
                     self.read_map(next).previous = current

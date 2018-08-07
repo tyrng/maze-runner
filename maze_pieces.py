@@ -131,7 +131,18 @@ class Cell(Piece):
             opposite is not last:
                 paths.append(opposite)
         return paths
-
+        
+    #Return cells that are connected to this cell that are open and not blocked by the dead-end fill (black color)
+    def get_bPaths(self, color, last=None, checkWalls=True, returnOpen=True):
+        paths = []
+        for hall in self.get_halls():
+            opposite = hall.opposite(self, False)
+            if (not checkWalls or hall.is_open() == returnOpen) and \
+            opposite is not last and color != 'black':
+                paths.append(opposite)
+        return paths
+    
+    
     def random_path(self, last=None, checkWalls=True, returnOpen=True):
         """Return the cell in a random direction."""
         paths = self.get_paths(last, checkWalls, returnOpen)
