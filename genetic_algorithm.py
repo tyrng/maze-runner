@@ -103,5 +103,3 @@ class Gen_algorithm(walker_base.WalkerBase):
         else:
             self._isDone = True
             
-                
-    

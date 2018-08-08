@@ -36,7 +36,7 @@ class Wilson(WalkerBase):
         # loopProb should be between 0 and 1
         super(Wilson, self).__init__(maze, maze.start(), self.Node(False, None))
         self._open(self._cell)
-        self._maze.paint(self._cell, OPEN_FILL)
+        self._maze.Wpaint(self._cell, OPEN_FILL)
         self.x = 0
         self.y = 0
         self._loopProb = loopProb
@@ -68,7 +68,7 @@ class Wilson(WalkerBase):
         if next is None:
             return
         self._mark_next(cell, None)
-        self._maze.paint(cell, NULL_FILL)
+        self._maze.Wpaint(cell, NULL_FILL)
         self._erase_tracks(next)
 
     def _plan(self):
@@ -79,7 +79,7 @@ class Wilson(WalkerBase):
             self._planLast = None
 
         if self._speed < 2:
-            self._maze.paint(self._planCell, PLAN_FILL)
+            self._maze.Wpaint(self._planCell, PLAN_FILL)
 
         newCell = self._planCell.random_path(self._planLast, checkWalls=False)
         self._mark_next(self._planCell, newCell)
@@ -100,12 +100,12 @@ class Wilson(WalkerBase):
         the open part of the maze. This will then "dig" these cells open.
         """
         if self._is_open(self._cell):
-            self._maze.paint(self._cell, OPEN_FILL)
+            self._maze.Wpaint(self._cell, OPEN_FILL)
             return
 
         self._open(self._cell)
         self._cell.open_by_cells(self.read_map(self._cell).next)
-        self._maze.paint(self._cell, OPEN_FILL)
+        self._maze.Wpaint(self._cell, OPEN_FILL)
 
         self._cell = self.read_map(self._cell).next
         self._dig()
@@ -124,7 +124,7 @@ class Wilson(WalkerBase):
                 if cell.count_halls() == 1 and \
                 self._loopProb > random.random():
                     self._open_deadend(cell)
-                    self.paint(cell, OPEN_FILL)
+                    self._maze.Wpaint(cell, OPEN_FILL)
         self._maze.update_idletasks()
 
     def step(self):

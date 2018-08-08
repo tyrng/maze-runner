@@ -294,6 +294,18 @@ class Maze(Tk.Canvas):
                     fillColor = NULL_FILL
                 self.itemconfigure(hall.get_id(), fill=fillColor) 
                    
+    def Wpaint(self, cell, color, paintWalls=True):          #color
+        """Takes a cell object and a color to paint it.
+        Color must be something that Tkinter will recognize."""
+        self.itemconfigure(cell.get_id(), fill=color, outline=color)
+        # Paint the walls
+        if paintWalls:
+            for hall in cell.get_halls():
+                if hall.is_open():  # The wall is down
+                    fillColor = color
+                else:
+                    fillColor = NULL_FILL
+                self.itemconfigure(hall.get_id(), fill=fillColor) 
 
     #check color of each cell 
     def check_color(self, cell, paintWalls=True):
