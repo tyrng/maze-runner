@@ -60,13 +60,15 @@ individual_color = ['cyan3', 'spring green', 'goldenrod', 'dark violet', 'magent
 class Individual(walker_base.WalkerBase):
     def __init__(self, maze, gene_length, color):
         super(Individual, self).__init__(maze, maze.start()) 
-        self.fitness = 0
+        self.fitness = 0.00000000
         self.steps = 0
         self.genes = []        
         self.current_location = self._maze.start()
         self.color = color
-        self.moves = DIRECTIONS
-        self._gene_length = gene_length        
+        self.moves = DIRECTIONS    
+        self.distance = 0.000000000 
+        for x in range(gene_length):
+            self.genes.append(random.choice(self.moves))
                         
 
 class Gen_algorithm(walker_base.WalkerBase):
@@ -89,7 +91,7 @@ class Gen_algorithm(walker_base.WalkerBase):
             self._maze.cleanDot(G_SOLVED_PATH)
             for individual in self.population:
                 move = self._cell.move_individual(self._maze, individual.current_location, individual.genes[self.currentStep])
-                print individual.color + ' ' + str(individual.steps)
+                # print individual.color + ' ' + str(individual.steps)
                 if move is not None:
                     individual.current_location = move
                     individual.steps = individual.steps + 1
@@ -98,6 +100,28 @@ class Gen_algorithm(walker_base.WalkerBase):
             self.currentStep = self.currentStep + 1
         else:
             self._isDone = True
+            self.updateAllFitness()
+            for individual in self.population:
+                print individual.color + ' ' + str(individual.fitness)
+    
+    def calDistance(self, cell):
+        cell.distance = 0.0000000 + len(self._maze.solvedPath) - self._maze.solvedPath.index(cell)
+        
+    def updateAllFitness(self):
+        for individual in self.population:
+            distance = self.calDistance(individual.current_location)
+            individual.fitness = individual.distance + (individual.distance / individual.steps)
+    
+    def updateFitness(self, individual):
+        distance = self.calDistance(individual.current_location)
+        individual.fitness = individual.distance + (individual.distance / individual.steps)
+
+    def prepareNextGen(self):
+        if self.fittest.distance / self.gene_length >= 0.70:
+            new_gene_length = self.gene_length * 2
+            diff = new_gene_length - self.gene_length
+            for x in range(diff):
+                self.genes.append(random.choice(self.moves))
             
     def getFittest(self):
         pq = Q.PriorityQueue()
