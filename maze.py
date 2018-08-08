@@ -23,10 +23,9 @@ class Maze(Tk.Canvas):
 
     def __init__(self, frame):
         #Genetic Algorithm trigger
-        self.G_ALGORITHM = ''
-    
-                
-        
+        self.gAlgorithm = ''
+        self.solvedPath = []
+
         self._frame = frame
         self._cells = [[Cell(x, y) for y in xrange(YCELLS)] \
                        for x in xrange(XCELLS)]
@@ -64,7 +63,7 @@ class Maze(Tk.Canvas):
             self.after(self._walker.delay(), self._run)
         else:
             self.lift('dots')
-            if(self.G_ALGORITHM == 'f' or self.G_ALGORITHM == 'a'):
+            if(self.gAlgorithm == 'f' or self.gAlgorithm == 'a'):
                 self.g_prompt()
             else:
                 self.prompt()
@@ -97,10 +96,15 @@ class Maze(Tk.Canvas):
 
     #path finding for dead end filler run
     def g_prompt(self):
-        if(self.G_ALGORITHM == 'f' or self.G_ALGORITHM == 'a'):
-            self.G_ALGORITHM = ''            
-            self._walker = getAllPaths(self)
-            self.after(self._walker.delay(), self.g_run)
+        if(self.gAlgorithm == 'f' or self.gAlgorithm == 'a'):
+            if (self.gAlgorithm == 'f'):
+                self.gAlgorithm = '' 
+                self._walker = getAllPaths(self)
+                self.after(self._walker.delay(), self.g_run)
+            else:
+                self.gAlgorithm = ''
+                self.gen_loop()  
+                     
             
     #Genetic algorithm loop        
     def gen_loop(self):
@@ -112,7 +116,7 @@ class Maze(Tk.Canvas):
             print "Generation: " + str(self.generation)
             gen_state = True
                         
-                                
+        self.cleanPath('blue')                        
             
         self.prompt()
                 
@@ -139,8 +143,8 @@ class Maze(Tk.Canvas):
             choice = raw_input(">> ").strip().lower()
             
             
-            if choice == 'f':
-                self.G_ALGORITHM = choice 
+            if choice == 'f' or choice == 'a':
+                self.gAlgorithm = choice 
 
             
             if choice == 'q':
@@ -236,6 +240,12 @@ class Maze(Tk.Canvas):
         for col in self._cells:
             for cell in col:
                 self.paint(cell, OPEN_FILL)
+        self.update_idletasks()
+
+    def cleanPath(self, color):
+        """Reprint solved path"""
+        for cell in self.solvedPath:
+            self.paint(cell, color)
         self.update_idletasks()
 
     def paint(self, cell, color, paintWalls=True):          #color

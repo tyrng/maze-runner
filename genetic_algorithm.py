@@ -38,7 +38,9 @@ class getAllPaths(walker_base.WalkerBase):
                 self._maze.paint(current, pathColor)
                 
                 #test shape                       
-                self._maze.paint_individual(1, 1, 'blue')                
+                self._maze.paint_individual(1, 1, 'green')    
+                #store in solvedPath
+                self._maze.solvedPath.append(current)
                 
                 current = self.read_map(current).previous
                 print current

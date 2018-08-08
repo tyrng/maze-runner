@@ -32,9 +32,11 @@ class aStarWalker(walker_base.WalkerBase):
         currentCost, current = self.queue.get()
 
         if current is self._maze.finish():
+            
             while current is not None:
                 # Start cell should point to None
                 self._maze.paint(current, FOUND_COLOR)
+                self._maze.solvedPath.append(current)
                 current = self.read_map(current).previous
             self._isDone = True
         else:

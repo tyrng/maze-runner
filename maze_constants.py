@@ -23,6 +23,7 @@ NULL_FILL = 'green'
 PLAN_FILL = 'grey'
 OPEN_FILL = 'brown'
 DOT_COLORS = ['green', 'red']   # start dot, finish dot
+G_SOLVED_PATH = 'blue'
 
 # Helpers
 DIRECTIONS = ['north', 'east', 'south', 'west']
