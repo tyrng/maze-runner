@@ -26,6 +26,8 @@ class getAllPaths(walker_base.WalkerBase):
         self.queue.append(marker)
 
     def step(self):
+        
+        
         current = self.queue.popleft()
 
         if current is marker:
@@ -34,6 +36,10 @@ class getAllPaths(walker_base.WalkerBase):
             while current is not None:
                 # Start cell should point to None
                 self._maze.paint(current, pathColor)
+                
+                #test shape                       
+                self._maze.paint_individual(1, 1, 'blue')                
+                
                 current = self.read_map(current).previous
                 print current
             self._isDone = True
@@ -44,5 +50,25 @@ class getAllPaths(walker_base.WalkerBase):
                     self.read_map(next).previous = current
                     self.queue.append(next)
             self.step()
-    
+
+
+#Color of the individuals
+individual_color = ['blue', 'green', 'yellow', 'purple']
+              
+
+
+class gen_algorithm(walker_base.WalkerBase):
+    """Genetic algorithm class"""    
+
+    def __init__(self, maze):
+        super(gen_algorithm, self).__init__(maze, maze.start())
+        self._maze.clean()
+        self._delay = 50
+        self.population = 10
+        
+        
+    def step(self):
+        gen = self.generation        
+        
+        
     

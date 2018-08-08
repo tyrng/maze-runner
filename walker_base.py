@@ -13,8 +13,10 @@ class WalkerBase(object):
         """Takes a cell object from the maze in question
         NOTE: default must not be object if you want a map of any kind.
         """
-        self._delay = DELAY
-        self.g_delay = G_DELAY
+        self.generation = 0
+        self.success = False
+
+        self._delay = DELAY    
         self._isDone = False
         self._maze = maze
         self._cell = position   # This is a cell object

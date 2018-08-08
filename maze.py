@@ -103,8 +103,16 @@ class Maze(Tk.Canvas):
             
     #Genetic algorithm loop        
     def gen_loop(self):
+        self.generation = 0
+        gen_state = False
+        #loop here         
+        while(gen_state == False):
+            self.generation = self.generation + 1
+            print "Generation: " + str(self.generation)
+            gen_state = True
+                        
+                                
             
-        
         self.prompt()
                 
             
@@ -191,7 +199,7 @@ class Maze(Tk.Canvas):
         x = (x * CELL_SIZE)
         y = (y * CELL_SIZE)
 
-        topLeft = (x, y)
+        topLeft = (x, y)                    #WTF 8 points
         bottomLeft = (x, y + CELL_SIZE)
         topRight = (x + CELL_SIZE, y)
         bottomRight = (x + CELL_SIZE, y + CELL_SIZE)
@@ -245,6 +253,15 @@ class Maze(Tk.Canvas):
     #check color of each cell 
     def check_color(self, cell, paintWalls=True):
         return self.itemcget(cell.get_id(), 'fill')
+        
+    #Mark individuals (oval shape)
+    def paint_individual(self, x, y, color):        
+        
+        topLeft = (x * CELL_SIZE + 1, y * CELL_SIZE + 1)
+        bottomRight = (topLeft[0] + CELL_SIZE - 2, topLeft[1] + CELL_SIZE - 2)
+        corners = [topLeft, bottomRight]        
+        
+        self.create_oval(corners, fill=color, outline=color)
 
     def start(self):
         return self._cells[0][0]
