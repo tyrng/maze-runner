@@ -12,6 +12,7 @@ from maze_pieces import Hall, Cell
 from wilson import Wilson
 from depth_walker import DepthWalker
 from breadth_walker import BreadthWalker
+from astar_walker import aStarWalker
 from deadend_filler import DeadendFiller
 from tremaux import Tremaux
 from mouse import RandomMouse
@@ -91,11 +92,12 @@ class Maze(Tk.Canvas):
         
         #======================================================#        
         classes = {'d': DepthWalker, 'b': BreadthWalker, 'f': DeadendFiller, \
-                   't': Tremaux, 'm': RandomMouse}
+                   't': Tremaux, 'm': RandomMouse, 'a': aStarWalker}
         while True:
             print "Choose maze solving algorithm"
             print "(D)epth first search"
             print "(B)readth first search"
+            print "(A) star search"
             print "Deadend (f)iller"
             print "(T)remaux's algorithm"
             print "Random (m)ouse"

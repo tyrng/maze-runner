@@ -63,3 +63,9 @@ class WalkerBase(object):
         """Return the info about the current cell"""
         x, y = cell.get_position()
         return self._map[x][y]
+
+    def heuristic(self, cellA, cellB):
+        # Manhattan distance on a square grid
+        ax,ay = cellA.get_position()
+        bx,by = cellB.get_position()
+        return abs(ax - bx) + abs(ay - by)
