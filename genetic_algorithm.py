@@ -5,6 +5,7 @@ from collections import deque
 import random
 import walker_base
 from maze_constants import *
+import Queue as Q
 
 
 marker = object()
@@ -65,13 +66,7 @@ class Individual(walker_base.WalkerBase):
         self.current_location = self._maze.start()
         self.color = color
         self.moves = DIRECTIONS
-        self._gene_length = gene_length
-        for x in range(gene_length):
-            self.genes.append(random.choice(self.moves))
-        
-    # def individial_initialize(self):        #initialize each individual with random movement
-    #     for x in self.getGeneLength():
-    #         self.genes[x] = random.shuffle(self.moves)
+        self._gene_length = gene_length        
                         
 
 class Gen_algorithm(walker_base.WalkerBase):
@@ -83,10 +78,11 @@ class Gen_algorithm(walker_base.WalkerBase):
         self.gene_length = 20       #steps for each individual
         self.population = [Individual(self._maze, self.gene_length, individual_color[x]) for x in range(10)]
         self.fittest = None
-        self.secondFittest = None
-        self.leastFittest = None
+        self.secondFit = None
+        self.fittestG = []
+        self.secondFittestG = []
+        self.leastFittest = []
         self.currentStep = 0
-
             
     def step(self):
         if self.currentStep < self.gene_length:
@@ -121,3 +117,51 @@ class Gen_algorithm(walker_base.WalkerBase):
         distance = distance + self.calDistance(individual.current_location)
         fitness = distance + (distance / individual.steps)
         individual.fitness = fitness
+            
+    def getFittest(self):
+        pq = Q.PriorityQueue()
+        
+    
+        for x in self.population:
+            pq.put((100/x.fitness),x)
+        
+        self.fittest = pq.get()
+        self.secondFit = pq.get()          
+            
+    def selection_crossover(self):               
+        self.getFittest()
+        
+        self.fittestG = fittest.genes
+        self.secondFittestG= secondFit.genes
+        
+        for x in pq:
+            if not pq.empty():
+                lastFit = pq.get()
+        
+        for x in self.population:
+            if x == lastFit:
+                x.genes = self.fittestG
+        
+        #crossover
+        crossOverPoint = random.randint(1, self.gene_length)
+        
+        for x in range(crossOverPoint):
+            temp = self.fittestG[x]
+            self.fittestG[x] = self.secondFittestG[x]
+            self.secondFittestG[x] = temp
+            
+        for x in self.population:
+            if x == fittest:
+                x.genes = self.fittestG
+            elif x == secondFit:
+                x.genes = self.secondFittestG
+                
+    
+    def mutation(self):
+        
+        
+            
+        
+        
+    
+>>>>>>> affb27971d0615b94dd4632483180e1733ed3677
