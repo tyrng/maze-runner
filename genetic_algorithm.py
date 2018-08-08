@@ -112,15 +112,15 @@ class Gen_algorithm(walker_base.WalkerBase):
     def selection_crossover(self):               
         self.getFittest()
         
-        self.fittestG = fittest.genes
-        self.secondFittestG= secondFit.genes
+        self.fittestG = self.fittest.genes
+        self.secondFittestG= self.secondFit.genes
         
         for x in pq:
             if not pq.empty():
-                lastFit = pq.get()
+                self.lastFit = pq.get()
         
         for x in self.population:
-            if x == lastFit:
+            if x == self.lastFit:
                 x.genes = self.fittestG
         
         #crossover
@@ -132,13 +132,40 @@ class Gen_algorithm(walker_base.WalkerBase):
             self.secondFittestG[x] = temp
             
         for x in self.population:
-            if x == fittest:
+            if x == self.fittest:
                 x.genes = self.fittestG
-            elif x == secondFit:
+            elif x == self.secondFit:
                 x.genes = self.secondFittestG
                 
     
     def mutation(self):
+        
+        mutationPoint1 = random.randint(1, self.gene_length)
+        mutationPoint2 = random.randint(1, self.gene_length)
+        
+        self.getFittest()
+        #========================================================Fittest mutation
+        self.fittestG = self.fittest.genes
+        self.secondFittestG= self.secondFit.genes        
+        
+        
+        temp = self.fittestG[mutationPoint1]
+        self.fittestG[mutationPoint1] = self.fittestG[mutationPoint2]  
+        self.fittestG[mutationPoint2] = temp
+        #=========================================================Second Fittest mutation
+        
+        mutationPoint1 = random.randint(1, self.gene_length)
+        mutationPoint2 = random.randint(1, self.gene_length)        
+        
+        temp = self.secondFittestG[mutationPoint1]
+        self.secondFittestG[mutationPoint1] = self.secondFittestG[mutationPoint2]  
+        self.secondFittestG[mutationPoint2] = temp
+         
+        for x in self.population:
+            if x == self.fittest:
+                x.genes = self.fittestG
+            elif x == self.secondFit:
+                x.genes = self.secondFittestG
         
         
             
