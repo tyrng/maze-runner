@@ -16,12 +16,15 @@ from astar_walker import aStarWalker
 from deadend_filler import DeadendFiller
 from tremaux import Tremaux
 from mouse import RandomMouse
+from genetic_algorithm import getAllPaths
+import sys
 
 class Maze(Tk.Canvas):
 
     def __init__(self, frame):
         #Genetic Algorithm trigger
-        self.G_ALGORITHM = ''    
+        self.G_ALGORITHM = ''
+    
                 
         
         self._frame = frame
@@ -60,8 +63,20 @@ class Maze(Tk.Canvas):
             self._walker.step()
             self.after(self._walker.delay(), self._run)
         else:
-            self.lift('dots')       
-            self.prompt()
+            self.lift('dots')
+            if(self.G_ALGORITHM == 'f' or self.G_ALGORITHM == 'a'):
+                self.g_prompt()
+            else:
+                self.prompt()
+                
+    #Runs genetic algorithm                
+    def g_run(self):
+        if not self._walker.is_done():
+            self._walker.step()
+            self.after(self._walker.delay(), self.g_run)
+        else:
+            self.lift('dots')        
+            self.gen_loop()                
 
     def prompt_build(self):
         """Get user input before the maze has been built"""
@@ -79,18 +94,34 @@ class Maze(Tk.Canvas):
         self._walker = Wilson(self, float(factor) / 100.0, speed)       #maze generation
         self.after(self._walker.delay(), self._run)
 
+
+    #path finding for dead end filler run
+    def g_prompt(self):
+        if(self.G_ALGORITHM == 'f' or self.G_ALGORITHM == 'a'):
+            self.G_ALGORITHM = ''            
+            self._walker = getAllPaths(self)
+            self.after(self._walker.delay(), self.g_run)
+            
+    #Genetic algorithm loop        
+    def gen_loop(self):
+        self.generation = 0
+        gen_state = False
+        #loop here         
+        while(gen_state == False):
+            self.generation = self.generation + 1
+            print "Generation: " + str(self.generation)
+            gen_state = True
+                        
+                                
+            
+        self.prompt()
+                
+            
+
+
     def prompt(self):
         """Get user input after the maze has been built"""
-        
-        #=================Genetic algorithm mode===============#
-        if(self.G_ALGORITHM == 'f' or self.G_ALGORITHM == 'a'):       
-            #get solution
-            num1 = 0
-        
-        
-        
-        
-        #======================================================#        
+           
         classes = {'d': DepthWalker, 'b': BreadthWalker, 'f': DeadendFiller, \
                    't': Tremaux, 'm': RandomMouse, 'a': aStarWalker}
         while True:
@@ -104,7 +135,9 @@ class Maze(Tk.Canvas):
             print "(R)ebuild maze"        
             print "(Q)uit"
             
+            
             choice = raw_input(">> ").strip().lower()
+            
             
             if choice == 'f':
                 self.G_ALGORITHM = choice 
@@ -168,7 +201,7 @@ class Maze(Tk.Canvas):
         x = (x * CELL_SIZE)
         y = (y * CELL_SIZE)
 
-        topLeft = (x, y)
+        topLeft = (x, y)                    #WTF 8 points
         bottomLeft = (x, y + CELL_SIZE)
         topRight = (x + CELL_SIZE, y)
         bottomRight = (x + CELL_SIZE, y + CELL_SIZE)
@@ -205,7 +238,7 @@ class Maze(Tk.Canvas):
                 self.paint(cell, OPEN_FILL)
         self.update_idletasks()
 
-    def paint(self, cell, color, paintWalls=True):
+    def paint(self, cell, color, paintWalls=True):          #color
         """Takes a cell object and a color to paint it.
         Color must be something that Tkinter will recognize."""
         self.itemconfigure(cell.get_id(), fill=color, outline=color)
@@ -217,7 +250,20 @@ class Maze(Tk.Canvas):
                     fillColor = color
                 else:
                     fillColor = NULL_FILL
-                self.itemconfigure(hall.get_id(), fill=fillColor)
+                self.itemconfigure(hall.get_id(), fill=fillColor)            
+
+    #check color of each cell 
+    def check_color(self, cell, paintWalls=True):
+        return self.itemcget(cell.get_id(), 'fill')
+        
+    #Mark individuals (oval shape)
+    def paint_individual(self, x, y, color):        
+        
+        topLeft = (x * CELL_SIZE + 1, y * CELL_SIZE + 1)
+        bottomRight = (topLeft[0] + CELL_SIZE - 2, topLeft[1] + CELL_SIZE - 2)
+        corners = [topLeft, bottomRight]        
+        
+        self.create_oval(corners, fill=color, outline=color)
 
     def start(self):
         return self._cells[0][0]

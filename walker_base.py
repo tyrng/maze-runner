@@ -13,7 +13,10 @@ class WalkerBase(object):
         """Takes a cell object from the maze in question
         NOTE: default must not be object if you want a map of any kind.
         """
-        self._delay = DELAY
+        self.generation = 0
+        self.success = False
+
+        self._delay = DELAY    
         self._isDone = False
         self._maze = maze
         self._cell = position   # This is a cell object
@@ -36,7 +39,7 @@ class WalkerBase(object):
 
     def paint(self, cell, color, paintWalls=True):
         """Paint the current cell the indicated color"""
-        self._maze.paint(cell, color, paintWalls)
+        self._maze.paint(cell, color, paintWalls)        
 
     def init_map(self, default):
         """Set each point on the map to some default value"""

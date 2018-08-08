@@ -7,7 +7,7 @@ from random import choice
 from maze_constants import *
 from walker_base import WalkerBase
 
-MOUSE_COLOR = 'brown'     #Mouse color (try to randomize for genetic algorithm)
+MOUSE_COLOR = 'grey60'     #Mouse color (try to randomize for genetic algorithm)
                 
 class RandomMouse(WalkerBase):
 
