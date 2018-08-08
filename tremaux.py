@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import random
 from walker_base import WalkerBase
 
-FOUND_COLOR = 'red'
-VISITED_COLOR = 'gray70'
+FOUND_COLOR = 'red3'
+VISITED_COLOR = 'gray20'
 
 class Tremaux(WalkerBase):
 

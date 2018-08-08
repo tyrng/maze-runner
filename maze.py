@@ -16,7 +16,7 @@ from astar_walker import aStarWalker
 from deadend_filler import DeadendFiller
 from tremaux import Tremaux
 from mouse import RandomMouse
-from genetic_algorithm import getAllPaths
+from genetic_algorithm import *
 import sys
 
 class Maze(Tk.Canvas):
@@ -116,9 +116,13 @@ class Maze(Tk.Canvas):
             print "Generation: " + str(self.generation)
             gen_state = True
                         
-        self.cleanPath('blue')                        
-            
-        self.prompt()
+        self.cleanPath(G_SOLVED_PATH)
+        
+        walkClass = Gen_algorithm
+        self._walker = walkClass(self)
+        self.after(self._walker.delay(), self._run)
+        
+        # self.prompt()
                 
             
 

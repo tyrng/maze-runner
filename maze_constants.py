@@ -19,11 +19,11 @@ if XCELLS * YCELLS > sys.getrecursionlimit():
     sys.setrecursionlimit(XCELLS * YCELLS)
 
 # Colors
-NULL_FILL = 'green'
+NULL_FILL = 'forest green'
 PLAN_FILL = 'grey'
-OPEN_FILL = 'brown'
+OPEN_FILL = 'black'
 DOT_COLORS = ['green', 'red']   # start dot, finish dot
-G_SOLVED_PATH = 'blue'
+G_SOLVED_PATH = 'red3'
 
 # Helpers
 DIRECTIONS = ['north', 'east', 'south', 'west']

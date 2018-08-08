@@ -7,8 +7,8 @@ from maze_constants import *
 import walker_base
 from maze_pieces import MazeError
 
-VISITED_COLOR = 'gray70'
-FOUND_COLOR = 'red'
+VISITED_COLOR = 'gray20'
+FOUND_COLOR = G_SOLVED_PATH
 # marker = object()
 
 class aStarWalker(walker_base.WalkerBase):

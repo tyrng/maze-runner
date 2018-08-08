@@ -7,7 +7,7 @@ The only thing left at the end should be the solution
 from maze_constants import *
 import walker_base
 
-FILL_COLOR = 'black'
+FILL_COLOR = 'AntiqueWhite1'
 
 class DeadendFiller(walker_base.WalkerBase):
 

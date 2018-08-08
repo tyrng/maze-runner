@@ -7,9 +7,9 @@ import random
 import walker_base
 from maze_constants import *
 
-SEARCH_COLOR = 'light blue'
-FOUND_COLOR = 'red'
-VISITED_COLOR = 'gray70'
+SEARCH_COLOR = 'gray40'
+FOUND_COLOR = 'red3'
+VISITED_COLOR = 'gray20'
 
 class DepthWalker(walker_base.WalkerBase):
 

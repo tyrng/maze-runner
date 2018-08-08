@@ -132,23 +132,31 @@ class Cell(Piece):
                 paths.append(opposite)
         return paths
         
-    #Return cells that are connected to this cell that are open and not blocked by the dead-end fill (black color)
+    #Return cells that are connected to this cell that are open and not blocked by the dead-end fill (gray color)
     def get_bPaths(self, color, last=None, checkWalls=True, returnOpen=True):
         paths = []
         for hall in self.get_halls():
             opposite = hall.opposite(self, False)
             if (not checkWalls or hall.is_open() == returnOpen) and \
-            opposite is not last and color != 'black':
+            opposite is not last and color != 'AntiqueWhite1':
                 paths.append(opposite)
         return paths
-    
     
     def random_path(self, last=None, checkWalls=True, returnOpen=True):
         """Return the cell in a random direction."""
         paths = self.get_paths(last, checkWalls, returnOpen)
         return choice(paths)
 
-    def move(self, direction, checkWalls=True):
+    def move_individual(self, maze, direction, checkWalls=True):
+        nextCell = self._paths[direction].opposite(self, checkWalls)
+        color = maze.check_color(nextCell)
+        if color == 'AntiqueWhite1' or color == 'gray20':
+            return None
+        else:
+            return nextCell
+
+
+    def move(self, direction, checkWalls=True):                     #MOVE ONE DIRECTION 
         """Return the cell in the direction indicated, or None if 
         there is a wall.
         """

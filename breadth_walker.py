@@ -31,7 +31,7 @@ class SearchColors(object):
 
 
 SEARCH_COLORS = SearchColors()
-FOUND_COLOR = 'red'
+FOUND_COLOR = 'red3'
 marker = object()
 
 class BreadthWalker(walker_base.WalkerBase):
