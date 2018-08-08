@@ -101,6 +101,7 @@ class Gen_algorithm(walker_base.WalkerBase):
         else:
             self._isDone = True
             self.updateAllFitness()
+            self.prepareNextGen()
             for individual in self.population:
                 print individual.color + ' ' + str(individual.fitness)
     
@@ -109,11 +110,11 @@ class Gen_algorithm(walker_base.WalkerBase):
         
     def updateAllFitness(self):
         for individual in self.population:
-            distance = self.calDistance(individual.current_location)
+            individual.distance = self.calDistance(individual.current_location)
             individual.fitness = individual.distance + (individual.distance / individual.steps)
     
     def updateFitness(self, individual):
-        distance = self.calDistance(individual.current_location)
+        individual.distance = self.calDistance(individual.current_location)
         individual.fitness = individual.distance + (individual.distance / individual.steps)
 
     def prepareNextGen(self):
