@@ -59,7 +59,7 @@ individual_color = ['cyan3', 'spring green', 'goldenrod', 'dark violet', 'magent
 class Individual(walker_base.WalkerBase):
     def __init__(self, maze, gene_length, color):
         super(Individual, self).__init__(maze, maze.start()) 
-        self.fitness = 0
+        self.fitness = 0.00000000
         self.steps = 0
         self.genes = []        
         self.current_location = self._maze.start()
@@ -93,7 +93,7 @@ class Gen_algorithm(walker_base.WalkerBase):
             self._maze.cleanDot(G_SOLVED_PATH)
             for individual in self.population:
                 move = self._cell.move_individual(self._maze, individual.current_location, individual.genes[self.currentStep])
-                print individual.color + ' ' + str(individual.steps)
+                # print individual.color + ' ' + str(individual.steps)
                 if move is not None:
                     individual.current_location = move
                     individual.steps = individual.steps + 1
@@ -102,4 +102,22 @@ class Gen_algorithm(walker_base.WalkerBase):
             self.currentStep = self.currentStep + 1
         else:
             self._isDone = True
-            
+            self.updateAllFitness()
+            for individual in self.population:
+                print individual.color + ' ' + str(individual.fitness)
+    
+    def calDistance(self, cell):
+        return len(self._maze.solvedPath) - self._maze.solvedPath.index(cell)
+        
+    def updateAllFitness(self):
+        for individual in self.population:
+            distance = 0.00000000
+            distance = distance + self.calDistance(individual.current_location)
+            fitness = distance + (distance / individual.steps)
+            individual.fitness = fitness
+    
+    def updateFitness(self, individual):
+        distance = 0.00000000
+        distance = distance + self.calDistance(individual.current_location)
+        fitness = distance + (distance / individual.steps)
+        individual.fitness = fitness
