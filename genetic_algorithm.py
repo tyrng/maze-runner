@@ -164,4 +164,3 @@ class Gen_algorithm(walker_base.WalkerBase):
         
         
     
->>>>>>> affb27971d0615b94dd4632483180e1733ed3677
