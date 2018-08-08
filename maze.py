@@ -67,12 +67,19 @@ class Maze(Tk.Canvas):
                 self.g_prompt()
             else:
                 self.prompt()
+
+    def gen_run(self):     #runs solution
+        if not self._walker.is_done():
+            self._walker.step()
+            self.after(G_DELAY, self.gen_run())
+        else:
+            self.lift('corners')
                 
     #Runs genetic algorithm                
     def g_run(self):
         if not self._walker.is_done():
             self._walker.step()
-            self.after(self._walker.delay(), self.g_run)
+            self.after(self._walker.delay(), self.g_run())
         else:
             self.lift('dots')        
             self.gen_loop()                
@@ -100,7 +107,7 @@ class Maze(Tk.Canvas):
             if (self.gAlgorithm == 'f'):
                 self.gAlgorithm = '' 
                 self._walker = getAllPaths(self)
-                self.after(self._walker.delay(), self.g_run)
+                self.after(self._walker.delay(), self.g_run())
             else:
                 self.gAlgorithm = ''
                 self.gen_loop()  
@@ -110,24 +117,34 @@ class Maze(Tk.Canvas):
     def gen_loop(self):
         self.generation = 0
         gen_state = False
-        #loop here         
+        #loop here   
+        #       
+        walkClass = Gen_algorithm
+            
+        self._walker = walkClass(self)
+
         while(gen_state == False):
-            self.generation = self.generation + 1
             print "Generation: " + str(self.generation)
+            self.generation = self.generation + 1
+
+            #self.cleanPath(G_SOLVED_PATH)        
+
+            self.after(G_DELAY, self.gen_run())
+
+
             gen_state = True
                         
-        self.cleanPath(G_SOLVED_PATH)
         
-        walkClass = Gen_algorithm
-        self._walker = walkClass(self)
-        self.after(self._walker.delay(), self._run)
         
-        # self.prompt()
+
+
+        self.prompt()
                 
             
 
 
     def prompt(self):
+
         """Get user input after the maze has been built"""
            
         classes = {'d': DepthWalker, 'b': BreadthWalker, 'f': DeadendFiller, \
@@ -150,6 +167,8 @@ class Maze(Tk.Canvas):
             if choice == 'f' or choice == 'a':
                 self.gAlgorithm = choice 
 
+            if choice != 't':
+                self.solvedPath = []
             
             if choice == 'q':
                 raise SystemExit
@@ -250,13 +269,22 @@ class Maze(Tk.Canvas):
         """Reprint solved path"""
         for cell in self.solvedPath:
             self.paint(cell, color)
-        self.update_idletasks()
+        self.update()
+
+    def cleanDot(self, color):
+        """Reprint dot"""
+        for dot in self.solvedPath:
+            if dot == self.start() or dot == self.finish():
+                continue
+            x,y = dot.get_position()
+            self.paint_individual(x, y, color)
+        self.update()
 
     def paint(self, cell, color, paintWalls=True):          #color
         """Takes a cell object and a color to paint it.
         Color must be something that Tkinter will recognize."""
         self.itemconfigure(cell.get_id(), fill=color, outline=color)
-
+        self.update()
         # Paint the walls
         if paintWalls:
             for hall in cell.get_halls():
@@ -264,7 +292,8 @@ class Maze(Tk.Canvas):
                     fillColor = color
                 else:
                     fillColor = NULL_FILL
-                self.itemconfigure(hall.get_id(), fill=fillColor)            
+                self.itemconfigure(hall.get_id(), fill=fillColor) 
+                   
 
     #check color of each cell 
     def check_color(self, cell, paintWalls=True):
@@ -278,6 +307,7 @@ class Maze(Tk.Canvas):
         corners = [topLeft, bottomRight]        
         
         self.create_oval(corners, fill=color, outline=color)
+        self.update()
 
     def start(self):
         return self._cells[0][0]

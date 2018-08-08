@@ -5,6 +5,7 @@ but the maze class.
 """
 
 from random import choice
+from maze_constants import *
 
 class Piece(object):
     """A base class for the other objects in the maze"""
@@ -147,13 +148,46 @@ class Cell(Piece):
         paths = self.get_paths(last, checkWalls, returnOpen)
         return choice(paths)
 
-    def move_individual(self, maze, direction, checkWalls=True):
-        nextCell = self._paths[direction].opposite(self, checkWalls)
-        color = maze.check_color(nextCell)
-        if color == 'AntiqueWhite1' or color == 'gray20':
-            return None
+    def move_individual(self, maze, currentCell, direction):
+        currentX = currentCell._xLoc
+        currentY = currentCell._yLoc
+        nextX = currentX
+        nextY = currentY
+
+        if direction == DIRECTIONS[0]:
+            nextY = currentY - 1
+        elif direction == DIRECTIONS[1]:
+            nextX = currentX + 1
+        elif direction == DIRECTIONS[2]:
+            nextY = currentY + 1
         else:
-            return nextCell
+            nextX = currentX - 1
+        
+        if nextX < 0 or nextX >= XCELLS or nextY < 0 or nextY >= YCELLS:
+            return None
+        
+        nextHall = currentCell._paths[direction]
+
+        if nextHall._cellA._xLoc == nextX and nextHall._cellA._yLoc == nextY:
+            nextCell = nextHall._cellA
+        elif nextHall._cellB._xLoc == nextX and nextHall._cellB._yLoc == nextY:
+            nextCell = nextHall._cellB
+        else:
+            return None
+
+        if nextHall.is_open():
+            color = maze.check_color(nextCell)
+            if color != 'AntiqueWhite1' and color != 'gray20' and color != 'black':
+                return nextCell
+
+        # if currentCell._paths[direction].is_open():
+        #     paths = self.get_paths(currentCell, True, True)
+        #     for c in paths:
+        #         if nextX == c._xLoc and nextY == c._yLoc:
+        #             color = maze.check_color(c)
+        #             if color != 'AntiqueWhite1' and color != 'gray20':
+        #                 return c
+        return None
 
 
     def move(self, direction, checkWalls=True):                     #MOVE ONE DIRECTION 

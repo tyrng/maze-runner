@@ -37,7 +37,7 @@ class getAllPaths(walker_base.WalkerBase):
                 self._maze.paint(current, G_SOLVED_PATH)
                 
                 #test shape                       
-                self._maze.paint_individual(1, 1, 'green')    
+                #    
                 #store in solvedPath
                 self._maze.solvedPath.append(current)
                 
@@ -57,21 +57,21 @@ class getAllPaths(walker_base.WalkerBase):
 individual_color = ['cyan3', 'spring green', 'goldenrod', 'dark violet', 'magenta2', 'snow2', 'DarkSeaGreen2', 'hot pink', 'LightSalmon2', 'RoyalBlue3']              
 
 class Individual(walker_base.WalkerBase):
-    def __init__(self, maze, gene_length):
+    def __init__(self, maze, gene_length, color):
         super(Individual, self).__init__(maze, maze.start()) 
         self.fitness = 0
-        self.rightStep = 0
+        self.steps = 0
         self.genes = []        
         self.current_location = self._maze.start()
-        self.color = random.shuffle(individual_color)
+        self.color = color
         self.moves = DIRECTIONS
         self._gene_length = gene_length
         for x in range(gene_length):
-            self.genes.append(random.shuffle(self.moves))
+            self.genes.append(random.choice(self.moves))
         
-    def individial_initialize(self):        #initialize each individual with random movement
-        for x in self.getGeneLength():
-            self.genes[x] = random.shuffle(self.moves)
+    # def individial_initialize(self):        #initialize each individual with random movement
+    #     for x in self.getGeneLength():
+    #         self.genes[x] = random.shuffle(self.moves)
                         
 
 class Gen_algorithm(walker_base.WalkerBase):
@@ -80,26 +80,28 @@ class Gen_algorithm(walker_base.WalkerBase):
     def __init__(self, maze):
         super(Gen_algorithm, self).__init__(maze, maze.start())        
         self._delay = G_DELAY
-        self.population = (Individual(self._maze, self.gene_length) for individual in range(10))
+        self.gene_length = 20       #steps for each individual
+        self.population = [Individual(self._maze, self.gene_length, individual_color[x]) for x in range(10)]
         self.fittest = None
         self.secondFittest = None
         self.leastFittest = None
-        self.gene_length = 10       #steps for each individual
         self.currentStep = 0
 
             
     def step(self):
         if self.currentStep < self.gene_length:
+            self._maze.cleanDot(G_SOLVED_PATH)
             for individual in self.population:
-                move = self._cell.move_individual(self._maze, DIRECTIONS[0])
+                move = self._cell.move_individual(self._maze, individual.current_location, individual.genes[self.currentStep])
+                print individual.color + ' ' + str(individual.steps)
                 if move is not None:
                     individual.current_location = move
-                    individual.rightStep = individual.rightStep + 1
-                self._maze.cleanPath(G_SOLVED_PATH)
+                    individual.steps = individual.steps + 1
                 x,y = individual.current_location.get_position()
                 self._maze.paint_individual(x, y, individual.color)
             self.currentStep = self.currentStep + 1
         else:
             self._isDone = True
+            
                 
     
