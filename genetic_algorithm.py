@@ -65,8 +65,10 @@ class Individual(walker_base.WalkerBase):
         self.genes = []        
         self.current_location = self._maze.start()
         self.color = color
-        self.moves = DIRECTIONS
-        self._gene_length = gene_length        
+        self.moves = DIRECTIONS    
+        self.distance = 0.000000000 
+        for x in range(gene_length):
+            self.genes.append(random.choice(self.moves))
                         
 
 class Gen_algorithm(walker_base.WalkerBase):
@@ -103,20 +105,23 @@ class Gen_algorithm(walker_base.WalkerBase):
                 print individual.color + ' ' + str(individual.fitness)
     
     def calDistance(self, cell):
-        return len(self._maze.solvedPath) - self._maze.solvedPath.index(cell)
+        cell.distance = 0.0000000 + len(self._maze.solvedPath) - self._maze.solvedPath.index(cell)
         
     def updateAllFitness(self):
         for individual in self.population:
-            distance = 0.00000000
-            distance = distance + self.calDistance(individual.current_location)
-            fitness = distance + (distance / individual.steps)
-            individual.fitness = fitness
+            distance = self.calDistance(individual.current_location)
+            individual.fitness = individual.distance + (individual.distance / individual.steps)
     
     def updateFitness(self, individual):
-        distance = 0.00000000
-        distance = distance + self.calDistance(individual.current_location)
-        fitness = distance + (distance / individual.steps)
-        individual.fitness = fitness
+        distance = self.calDistance(individual.current_location)
+        individual.fitness = individual.distance + (individual.distance / individual.steps)
+
+    def prepareNextGen(self):
+        if self.fittest.distance / self.gene_length >= 0.70:
+            new_gene_length = self.gene_length * 2
+            diff = new_gene_length - self.gene_length
+            for x in range(diff):
+                self.genes.append(random.choice(self.moves))
             
     def getFittest(self):
         pq = Q.PriorityQueue()
