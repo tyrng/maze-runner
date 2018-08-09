@@ -59,12 +59,22 @@ class Maze(Tk.Canvas):
         self.update_idletasks()
         self.prompt_build()
 
+
+    def memory_summary(self):
+        # Only import Pympler when we need it. We don't want it to
+        # affect our process if we never call memory_summary.
+        from pympler import summary, muppy
+        mem_summary = summary.summarize(muppy.get_objects())
+        rows = summary.format_(mem_summary)
+        return '\n'.join(rows)
+
     def _run(self):     #runs solution
         if not self._walker.is_done():
             self._walker.step()
             self.after(self._walker.delay(), self._run)
         else:
             self.lift('dots')
+            print (self.memory_summary())
             if(self.gAlgorithm == 'f' or self.gAlgorithm == 'a'):
                 self.g_prompt()
             else:
@@ -141,11 +151,11 @@ class Maze(Tk.Canvas):
             
             self._walker.selection_crossover()
             
-            const = random.randint(1,1000000) % 7
+            const = random.randint(1,2)
 
             # self._walker.mutation()
 
-            if (const < 5):
+            if (const == 2):
                 self._walker.mutation()
 
             self._walker.prepareNextGen()
@@ -347,3 +357,4 @@ if __name__ == '__main__':
     root.title('Maze Game Group 5')
     maze = Maze(root)
     root.mainloop()
+

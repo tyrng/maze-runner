@@ -93,15 +93,18 @@ class Gen_algorithm(walker_base.WalkerBase):
         if self.currentStep < self.gene_length:
             self._maze.cleanDot(G_SOLVED_PATH)
             for individual in self.population:
+                if individual.current_location == self._maze.finish():
+                    self._maze.individualSolved = True
+                    break
                 move = self._cell.move_individual(self._maze, individual.current_location, individual.genes[self.currentStep])
                 # print individual.color + ' ' + str(individual.steps)
                 if move is not None:
                     individual.current_location = move
                     individual.steps = individual.steps + 1
-                    d = self.calDistance(individual)
-                    if (d < individual.eachDistance):
-                        individual.back = individual.back + 1
-                    individual.eachDistance = d
+                    # d = self.calDistance(individual)
+                    # if (d < individual.eachDistance):
+                    #     individual.back = individual.back + 1
+                    # individual.eachDistance = d
                 else:
                     individual.stay = individual.stay + 1
                 x,y = individual.current_location.get_position()
@@ -115,7 +118,9 @@ class Gen_algorithm(walker_base.WalkerBase):
                 
     
     def calDistance(self, individual):
-        individual.distance = 0.0000000 + len(self._maze.solvedPath) - self._maze.solvedPath.index(individual.current_location)
+        s = list(self._maze.solvedPath)
+        s.reverse()
+        individual.distance = 0.0000000 + s.index(individual.current_location)
         
     def updateAllFitness(self):
         for individual in self.population:
@@ -123,7 +128,7 @@ class Gen_algorithm(walker_base.WalkerBase):
             if individual.steps == 0:
                 individual.fitness = -1
             else:
-                individual.fitness = individual.distance + (individual.distance / individual.steps) - individual.stay/self.gene_length - individual.back/self.gene_length
+                individual.fitness = individual.distance + (individual.distance / individual.steps)
             if individual.fitness < 0:
                 individual.genes = []
                 for x in xrange(0,self.gene_length):
@@ -133,13 +138,14 @@ class Gen_algorithm(walker_base.WalkerBase):
         for x in self.population:
             x.current_location = self._maze.start()
             x.stay = 0
+            x.steps = 0
             x.back = 0
             print str(self.population.index(x)) + ' : ' + str(x.distance) + ' : ' + str(x.fitness)
         self._isDone = False
         self.currentStep = 0
-        if self.fittest.distance / self.gene_length >= 0.70:
-            # new_gene_length = self.gene_length * 2
-            new_gene_length = self.gene_length + G_GEN0_STEPS
+        if self.fittest.distance / self.gene_length >= 0.35:
+            new_gene_length = self.gene_length + 10
+            # new_gene_length = self.gene_length + G_GEN0_STEPS
             diff = new_gene_length - self.gene_length
             self.gene_length = new_gene_length
             for individual in self.population:
@@ -171,17 +177,20 @@ class Gen_algorithm(walker_base.WalkerBase):
         
         self.fittestG = []
         self.secondFittestG = []
-        self.fittestG = self.fittest.genes
-        self.secondFittestG= self.secondFit.genes
+        self.fittestG = list(self.fittest.genes)
+        self.secondFittestG= list(self.secondFit.genes)
         
         
-        for x in self.population:
-            if x == self.lastFit:
-                x.genes = []
-                x.genes = self.fittestG
+        # for x in self.population:
+        #     if x == self.lastFit:
+        #         x.genes = []
+        #         x.genes = self.fittestG
         
+        self.lastFit.genes = []
+        self.lastFit.genes = list(self.fittestG)
+
         #crossover
-        crossOverPoint = random.randint(0, self.gene_length-1)
+        crossOverPoint = random.randint(0, self.gene_length*3/4)
         # crossOverPoint = self.gene_length / 2 - 1
         
         for x in xrange(0,crossOverPoint,1):
@@ -189,13 +198,18 @@ class Gen_algorithm(walker_base.WalkerBase):
             self.fittestG[x] = self.secondFittestG[x]
             self.secondFittestG[x] = temp
             
-        for x in self.population:
-            if x == self.fittest:
-                x.genes = []
-                x.genes = self.fittestG
-            elif x == self.secondFit:
-                x.genes = []
-                x.genes = self.secondFittestG
+        # for x in self.population:
+        #     if x == self.fittest:
+        #         x.genes = []
+        #         x.genes = self.fittestG
+        #     elif x == self.secondFit:
+        #         x.genes = []
+        #         x.genes = self.secondFittestG
+
+        self.fittest.genes = []
+        self.fittest.genes = list(self.fittestG)
+        self.secondFit.genes = []
+        self.secondFit.genes = list(self.secondFittestG)
                 
     
     def mutation(self):
@@ -206,9 +220,9 @@ class Gen_algorithm(walker_base.WalkerBase):
         self.getFittest()
         #========================================================Fittest mutation
         self.fittestG = []
-        self.fittestG = self.fittest.genes
+        self.fittestG = list(self.fittest.genes)
         self.secondFittestG = []
-        self.secondFittestG = self.secondFit.genes        
+        self.secondFittestG = list(self.secondFit.genes)      
         
         
         temp = self.fittestG[mutationPoint1]

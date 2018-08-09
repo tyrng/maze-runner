@@ -7,8 +7,8 @@ import sys
 
 DELAY = 5   # milliseconds
 G_DELAY = 0
-G_INDIVIDUAL = 100
-G_GEN0_STEPS = 60
+G_INDIVIDUAL = 10
+G_GEN0_STEPS = 20
 
 CELL_SIZE = 30      # pixels
 # includes space for walls, so subtract 2 ultimately
