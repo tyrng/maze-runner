@@ -134,12 +134,21 @@ class Gen_algorithm(walker_base.WalkerBase):
                     individual.genes.append(random.choice(individual.moves))
 
     def prepareNextGen(self):
+        averageFitness = 0
+        averageDistance = 0
         for x in self.population:
             x.current_location = self._maze.start()
             x.stay = 0
             x.steps = 0
             x.back = 0
             print str(self.population.index(x)) + ' : ' + str(x.distance) + ' : ' + str(x.fitness)
+            averageFitness = (averageFitness + x.fitness) / len(self.population)
+            averageDistance = averageDistance + x.distance / len(self.population)
+        print '==========================================='
+        print 'AVERAGE DISTANCE = ' + str(averageDistance)
+        print 'AVERAGE FITNESS  = ' + str(averageFitness)
+        print '==========================================='
+            
         self._isDone = False
         self.currentStep = 0
         if self.fittest.distance / self.gene_length >= 0.35:
