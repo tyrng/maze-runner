@@ -87,14 +87,13 @@ class Gen_algorithm(walker_base.WalkerBase):
         self.secondFittestG = []
         self.leastFittest = []
         self.currentStep = 0
+        self.oldBestFit = [] # Premature Convergence
             
     def step(self):
         if self.currentStep < self.gene_length:
             self._maze.cleanDot(G_SOLVED_PATH)
             for individual in self.population:
-                if individual.current_location == self._maze.finish():
-                    self._maze.individualSolved = True
-                    break
+
                 move = self._cell.move_individual(self._maze, individual.current_location, individual.genes[self.currentStep])
                 # print individual.color + ' ' + str(individual.steps)
                 if move is not None:
@@ -111,11 +110,24 @@ class Gen_algorithm(walker_base.WalkerBase):
                 if individual.current_location == self._maze.finish():
                     self._maze.individualSolved = True
                     self.currentStep = self.gene_length
+                    break
             self.currentStep = self.currentStep + 1
         else:
             self._isDone = True
                 
-    
+    def printTable(self):
+        averageFitness = 0
+        averageDistance = 0
+        for x in self.population:
+            print str(self.population.index(x)) + ' : ' + str(x.distance) + ' : ' + str(x.fitness)
+            averageFitness = averageFitness + x.fitness / len(self.population)
+            averageDistance = averageDistance + x.distance / len(self.population)
+            
+        print '==========================================='
+        print 'AVERAGE DISTANCE = ' + str(averageDistance)
+        print 'AVERAGE FITNESS  = ' + str(averageFitness)
+        print '==========================================='
+
     def calDistance(self, individual):
         s = list(self._maze.solvedPath)
         s.reverse()
@@ -134,20 +146,11 @@ class Gen_algorithm(walker_base.WalkerBase):
                     individual.genes.append(random.choice(individual.moves))
 
     def prepareNextGen(self):
-        averageFitness = 0
-        averageDistance = 0
         for x in self.population:
             x.current_location = self._maze.start()
             x.stay = 0
             x.steps = 0
             x.back = 0
-            print str(self.population.index(x)) + ' : ' + str(x.distance) + ' : ' + str(x.fitness)
-            averageFitness = (averageFitness + x.fitness) / len(self.population)
-            averageDistance = averageDistance + x.distance / len(self.population)
-        print '==========================================='
-        print 'AVERAGE DISTANCE = ' + str(averageDistance)
-        print 'AVERAGE FITNESS  = ' + str(averageFitness)
-        print '==========================================='
             
         self._isDone = False
         self.currentStep = 0
@@ -219,7 +222,29 @@ class Gen_algorithm(walker_base.WalkerBase):
         self.secondFit.genes = []
         self.secondFit.genes = list(self.secondFittestG)
                 
-    
+    def prematureConvergence(self):
+        self.getFittest()
+        self.oldBestFit.append(self.fittest.fitness) # float
+        if len(self.oldBestFit) >= 3: # check at least 3 generations
+            one = self.oldBestFit.pop()
+            two = self.oldBestFit.pop()
+            three = self.oldBestFit.pop()
+            if (one == two and two == three and one == three):
+                self.oldBestFit = []
+
+                # ADD GENE_LENGTH
+                diff = 10
+                new_gene_length = self.gene_length + diff
+                self.gene_length = new_gene_length
+                for individual in self.population:
+                    for x in xrange(0,diff):
+                        individual.genes.append(random.choice(individual.moves))
+
+            else:
+                self.oldBestFit.append(three)
+                self.oldBestFit.append(two)
+                self.oldBestFit.append(one)
+
     def mutation(self):
         
         mutationPoint1 = random.randint(0, self.gene_length-1)
@@ -248,10 +273,10 @@ class Gen_algorithm(walker_base.WalkerBase):
         for x in self.population:
             if x == self.fittest:
                 x.genes = []
-                x.genes = self.fittestG
+                x.genes = list(self.fittestG)
             elif x == self.secondFit:
                 x.genes = []
-                x.genes = self.secondFittestG
+                x.genes = list(self.secondFittestG)
         
         
             

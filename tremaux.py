@@ -93,6 +93,7 @@ class Tremaux(WalkerBase):
             if len(paths) > 0:
                 # Not a deadend
                 self.paint(self._cell, FOUND_COLOR)
+                self._maze.successPath.append(self._cell)
                 self._last = self._cell
                 self._cell = paths.pop()
             else:

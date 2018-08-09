@@ -28,6 +28,7 @@ class Maze(Tk.Canvas):
         self.solvedPath = []
         self.individualSolved = False
         self.count = 0
+        self.successPath = []
 
         self._frame = frame
         self._cells = [[Cell(x, y) for y in xrange(YCELLS)] \
@@ -141,6 +142,8 @@ class Maze(Tk.Canvas):
             #self.cleanPath(G_SOLVED_PATH)        
 
             self.after(G_DELAY, self.gen_run())
+
+            self._walker.printTable()
                 
             if self.individualSolved:
                 gen_state = True
@@ -151,11 +154,14 @@ class Maze(Tk.Canvas):
             self._walker.selection_crossover()
             
             const = random.randint(1,2)
-
+            print const
             # self._walker.mutation()
 
             if (const == 2):
-                self._walker.mutation()
+                for x in xrange(0, self._walker.gene_length, 5):
+                    self._walker.mutation()
+
+            self._walker.prematureConvergence()
 
             self._walker.prepareNextGen()
         
@@ -215,6 +221,7 @@ class Maze(Tk.Canvas):
         """Clean and rebuild the maze"""
         self.count=0
         del self.solvedPath[:]
+        del self.successPath[:]
         
         self.lower('dots')
         for column in self._cells:
@@ -288,6 +295,7 @@ class Maze(Tk.Canvas):
     def clean(self):
         """Return every cell to a default color"""
         self.count = 0
+        del self.successPath[:]
         for col in self._cells:
             for cell in col:
                 self.paint(cell, OPEN_FILL)
@@ -297,6 +305,10 @@ class Maze(Tk.Canvas):
         """Reprint solved path"""
         for cell in self.solvedPath:
             self.paint(cell, color)
+        for cell in self.successPath:
+            if cell not in self.solvedPath:
+                self.paint(cell, OPEN_FILL)
+        del self.successPath[:]
         self.update_idletasks()    
 
     def cleanDot(self, color):
