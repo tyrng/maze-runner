@@ -170,10 +170,10 @@ class Gen_algorithm(walker_base.WalkerBase):
     
         for x in self.population:
             if x.fitness <= 0:
-                x.fitness = 1
+                x.fitness = 1.0
             pq.put((100/x.fitness,x))
-            if x.fitness == 1:
-                x.fitness = -1
+            if x.fitness == 1.0:
+                x.fitness = -1.0
         
         nn1, self.fittest = pq.get()
         nn2, self.secondFit = pq.get()   
