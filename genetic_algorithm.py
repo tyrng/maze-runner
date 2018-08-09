@@ -118,6 +118,7 @@ class Gen_algorithm(walker_base.WalkerBase):
     def printTable(self):
         averageFitness = 0
         averageDistance = 0
+        print '#' + ' : ' + ' D. ' + ' : ' + 'Fitness'
         for x in self.population:
             print str(self.population.index(x)) + ' : ' + str(x.distance) + ' : ' + str(x.fitness)
             averageFitness = averageFitness + x.fitness / len(self.population)

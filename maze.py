@@ -136,28 +136,40 @@ class Maze(Tk.Canvas):
         self._walker = walkClass(self)
 
         while(gen_state == False):
+            print '///////////////////////////////////////////'
             print "Generation: " + str(self.generation)
+            print '///////////////////////////////////////////'
             self.generation = self.generation + 1
 
             #self.cleanPath(G_SOLVED_PATH)        
 
             self.after(G_DELAY, self.gen_run())
 
+            self._walker.updateAllFitness()
+
             self._walker.printTable()
+            
+            const = random.randint(1,2) # print const
+            mutation = False
+            if (const == 2):
+                print 'MUTATION : ON'
+                mutation = True
+            else:
+                print 'MUTATION : OFF'
+                mutation = False
+            print '==========================================='
                 
             if self.individualSolved:
                 gen_state = True
                 break
             
-            self._walker.updateAllFitness()
             
             self._walker.selection_crossover()
             
-            const = random.randint(1,2)
-            print const
+
             # self._walker.mutation()
 
-            if (const == 2):
+            if (mutation):
                 for x in xrange(0, self._walker.gene_length, 5):
                     self._walker.mutation()
 
