@@ -76,7 +76,7 @@ class Maze(Tk.Canvas):
         else:
             self.lift('dots')
             print (self.memory_summary())
-            if(self.gAlgorithm == 'f' or self.gAlgorithm == 'a'):
+            if(self.gAlgorithm == '1' or self.gAlgorithm == '2'):
                 self.g_prompt()
             else:
                 self.prompt()
@@ -116,8 +116,8 @@ class Maze(Tk.Canvas):
 
     #path finding for dead end filler run
     def g_prompt(self):
-        if(self.gAlgorithm == 'f' or self.gAlgorithm == 'a'):
-            if (self.gAlgorithm == 'f'):
+        if(self.gAlgorithm == '1' or self.gAlgorithm == '2'):
+            if (self.gAlgorithm == '2'):
                 self.gAlgorithm = '' 
                 self._walker = getAllPaths(self)
                 self.after(self._walker.delay(), self.g_run())
@@ -173,14 +173,16 @@ class Maze(Tk.Canvas):
 
         """Get user input after the maze has been built"""
            
-        classes = {'d': DepthWalker, 'b': BreadthWalker, 'f': DeadendFiller, \
-                   't': Tremaux, 'm': RandomMouse, 'a': aStarWalker}
+        classes = {'d': DepthWalker, 'b': BreadthWalker, 'f': DeadendFiller, '2': DeadendFiller, \
+                   't': Tremaux, 'm': RandomMouse, 'a': aStarWalker, '1': aStarWalker}
         while True:
             print "Choose maze solving algorithm"
             print "(D)epth first search"
             print "(B)readth first search"
             print "(A) star search"
+            print "(1). Genetic A star search"
             print "Deadend (f)iller"
+            print "(2). Genetic Deadend filler"
             print "(T)remaux's algorithm"
             print "Random (m)ouse"
             print "(R)ebuild maze"        
@@ -190,7 +192,7 @@ class Maze(Tk.Canvas):
             choice = raw_input(">> ").strip().lower()
             
             
-            if choice == 'f' or choice == 'a':
+            if choice == '1' or choice == '2':
                 self.gAlgorithm = choice 
 
             if choice == 't':
