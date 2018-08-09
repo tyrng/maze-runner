@@ -61,22 +61,13 @@ class Maze(Tk.Canvas):
         self.prompt_build()
 
 
-    def memory_summary(self):
-        # Only import Pympler when we need it. We don't want it to
-        # affect our process if we never call memory_summary.
-        from pympler import summary, muppy
-        mem_summary = summary.summarize(muppy.get_objects())
-        rows = summary.format_(mem_summary)
-        return '\n'.join(rows)
-
     def _run(self):     #runs solution
         if not self._walker.is_done():
             self._walker.step()
             self.after(self._walker.delay(), self._run)
         else:
-            self.lift('dots')
-            print (self.memory_summary())
-            if(self.gAlgorithm == '1' or self.gAlgorithm == '2'):
+            self.lift('dots')            
+            if(self.gAlgorithm == 'a' or self.gAlgorithm == 'f'):
                 self.g_prompt()
             else:
                 self.prompt()
@@ -94,8 +85,7 @@ class Maze(Tk.Canvas):
             self._walker.step()
             self.after(self._walker.delay(), self.g_run())
         else:
-            self.lift('dots')        
-            self.gen_loop()                
+            self.lift('dots')               
 
     def prompt_build(self):
         """Get user input before the maze has been built"""
@@ -116,14 +106,22 @@ class Maze(Tk.Canvas):
 
     #path finding for dead end filler run
     def g_prompt(self):
-        if(self.gAlgorithm == '1' or self.gAlgorithm == '2'):
-            if (self.gAlgorithm == '2'):
+        if(self.gAlgorithm == 'f' or self.gAlgorithm == 'a'):
+            if (self.gAlgorithm == 'f'):
                 self.gAlgorithm = '' 
                 self._walker = getAllPaths(self)
-                self.after(self._walker.delay(), self.g_run())
+                self.after(self._walker.delay(), self.g_run())                    
             else:
-                self.gAlgorithm = ''
-                self.gen_loop()  
+                self.gAlgorithm = ''      
+        
+        print "Enter Genetic algorithm? (y/n): "
+        
+        choice = raw_input(">> ").strip().lower()
+        
+        if (choice == 'y'):
+            self.gen_loop()  
+        else:
+            self.prompt()
                      
             
     #Genetic algorithm loop        
@@ -173,16 +171,14 @@ class Maze(Tk.Canvas):
 
         """Get user input after the maze has been built"""
            
-        classes = {'d': DepthWalker, 'b': BreadthWalker, 'f': DeadendFiller, '2': DeadendFiller, \
-                   't': Tremaux, 'm': RandomMouse, 'a': aStarWalker, '1': aStarWalker}
+        classes = {'d': DepthWalker, 'b': BreadthWalker, 'f': DeadendFiller, \
+                   't': Tremaux, 'm': RandomMouse, 'a': aStarWalker}
         while True:
             print "Choose maze solving algorithm"
             print "(D)epth first search"
             print "(B)readth first search"
             print "(A) star search"
-            print "(1). Genetic A star search"
             print "Deadend (f)iller"
-            print "(2). Genetic Deadend filler"
             print "(T)remaux's algorithm"
             print "Random (m)ouse"
             print "(R)ebuild maze"        
@@ -192,7 +188,7 @@ class Maze(Tk.Canvas):
             choice = raw_input(">> ").strip().lower()
             
             
-            if choice == '1' or choice == '2':
+            if choice == 'f' or choice == 'a':
                 self.gAlgorithm = choice 
 
             if choice == 't':
@@ -211,7 +207,7 @@ class Maze(Tk.Canvas):
                 continue
 
             break
-
+        
         self._walker = walkClass(self)
         self.after(self._walker.delay(), self._run)     #Run solution
 

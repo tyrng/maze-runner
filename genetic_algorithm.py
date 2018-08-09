@@ -42,8 +42,7 @@ class getAllPaths(walker_base.WalkerBase):
                 #store in solvedPath
                 self._maze.solvedPath.append(current)
                 
-                current = self.read_map(current).previous
-                print current
+                current = self.read_map(current).previous                
             self._isDone = True
         else:
             color = self._maze.check_color(current) #get color            

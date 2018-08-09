@@ -49,6 +49,7 @@ class DeadendFiller(walker_base.WalkerBase):
             cell = next
         
     def step(self):
+        
         if self.x == XCELLS:
             self.x = 0
             self.y += 1
