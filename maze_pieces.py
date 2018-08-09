@@ -142,7 +142,16 @@ class Cell(Piece):
             opposite is not last and color != 'AntiqueWhite1':
                 paths.append(opposite)
         return paths
-    
+        
+    def get_TPaths(self, color, last=None, checkWalls=True, returnOpen=True):
+        paths = []
+        for hall in self.get_halls():
+            opposite = hall.opposite(self, False)
+            if (not checkWalls or hall.is_open() == returnOpen) and \
+            opposite is not last and color != 'gray70':
+                paths.append(opposite)
+        return paths    
+        
     def random_path(self, last=None, checkWalls=True, returnOpen=True):
         """Return the cell in a random direction."""
         paths = self.get_paths(last, checkWalls, returnOpen)

@@ -27,6 +27,7 @@ class Maze(Tk.Canvas):
         self.gAlgorithm = ''
         self.solvedPath = []
         self.individualSolved = False
+        self.count = 0
 
         self._frame = frame
         self._cells = [[Cell(x, y) for y in xrange(YCELLS)] \
@@ -192,7 +193,7 @@ class Maze(Tk.Canvas):
             if choice == 'f' or choice == 'a':
                 self.gAlgorithm = choice 
 
-            if choice != 't':
+            if choice == 't':
                 self.solvedPath = []
             
             if choice == 'q':
@@ -214,6 +215,9 @@ class Maze(Tk.Canvas):
 
     def rebuild(self):
         """Clean and rebuild the maze"""
+        self.count=0
+        del self.solvedPath[:]
+        
         self.lower('dots')
         for column in self._cells:
             for cell in column:
@@ -285,6 +289,7 @@ class Maze(Tk.Canvas):
 
     def clean(self):
         """Return every cell to a default color"""
+        self.count = 0
         for col in self._cells:
             for cell in col:
                 self.paint(cell, OPEN_FILL)
@@ -294,7 +299,7 @@ class Maze(Tk.Canvas):
         """Reprint solved path"""
         for cell in self.solvedPath:
             self.paint(cell, color)
-        self.update()
+        self.update_idletasks()    
 
     def cleanDot(self, color):
         """Reprint dot"""
@@ -303,7 +308,7 @@ class Maze(Tk.Canvas):
                 continue
             x,y = dot.get_position()
             self.paint_individual(x, y, color)
-        self.update()
+        self.update()    
 
     def paint(self, cell, color, paintWalls=True):          #color
         """Takes a cell object and a color to paint it.

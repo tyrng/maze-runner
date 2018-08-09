@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import random
 from walker_base import WalkerBase
 
-FOUND_COLOR = 'red3'
-VISITED_COLOR = 'gray20'
+FOUND_COLOR = 'red'
+VISITED_COLOR = 'gray70'
 
 class Tremaux(WalkerBase):
 
@@ -33,7 +33,7 @@ class Tremaux(WalkerBase):
 
     def __init__(self, maze):
         super(Tremaux, self).__init__(maze, maze.start(), self.Node())
-        self._maze.clean()
+        self._maze#.clean()
         self._last = None     # Placeholder until later
 
     def _is_junction(self, cell):
@@ -47,17 +47,26 @@ class Tremaux(WalkerBase):
         
     def step(self):
         # This is so profoundly ugly
-
+        self._maze.count += 1     
+        
         if self._cell is self._maze.finish():
             self._isDone = True
+            #self._maze.solvedPath = self._cell
             self.paint(self._cell, FOUND_COLOR)
-            return
+            self._maze.cleanPath(VISITED_COLOR)
+            return            
             
-        # print self._cell.get_position()
-        paths = self._cell.get_paths(last=self._last)
+        color = self._maze.check_color(self._cell) 
+                
+        # print self._cell.get_position() 
+        if self._maze.count == 1:
+            paths = self._cell.get_paths(last=self._last)
+        else:
+            paths = self._cell.get_TPaths(color, last=self._last)             
         # print paths
         random.shuffle(paths)
 
+        
         if self._is_visited(self._cell):
             # We've been here before
             if self._backtracking(self._cell, self._last):
@@ -71,6 +80,8 @@ class Tremaux(WalkerBase):
                     self.paint(self._cell, VISITED_COLOR)
                     # Find the path back
                     passages = self.read_map(self._cell).passages
+                    self._maze.solvedPath.append(self._cell) 
+                
                     unvisited = set(self._cell.get_paths()).difference(passages)
                     self._last = self._cell
                     self._cell = unvisited.pop()
@@ -87,6 +98,7 @@ class Tremaux(WalkerBase):
             else:
                 # Is a deadend; backtrack
                 self.paint(self._cell, VISITED_COLOR)
+                self._maze.solvedPath.append(self._cell) 
                 self._cell, self._last = self._last, self._cell
 
         self.read_map(self._last).passages.add(self._cell)
