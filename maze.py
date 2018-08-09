@@ -17,6 +17,7 @@ from deadend_filler import DeadendFiller
 from tremaux import Tremaux
 from mouse import RandomMouse
 from genetic_algorithm import *
+import random
 import sys
 
 class Maze(Tk.Canvas):
@@ -25,6 +26,7 @@ class Maze(Tk.Canvas):
         #Genetic Algorithm trigger
         self.gAlgorithm = ''
         self.solvedPath = []
+        self.individualSolved = False
 
         self._frame = frame
         self._cells = [[Cell(x, y) for y in xrange(YCELLS)] \
@@ -130,14 +132,27 @@ class Maze(Tk.Canvas):
             #self.cleanPath(G_SOLVED_PATH)        
 
             self.after(G_DELAY, self.gen_run())
+                
+            if self.individualSolved:
+                gen_state = True
+                break
+            
+            self._walker.updateAllFitness()
+            
+            self._walker.selection_crossover()
+            
+            const = random.randint(1,1000000) % 7
 
+            # self._walker.mutation()
 
-            gen_state = True
-                        
+            if (const < 5):
+                self._walker.mutation()
+
+            self._walker.prepareNextGen()
         
         
 
-
+        self.individualSolved = False
         self.prompt()
                 
             

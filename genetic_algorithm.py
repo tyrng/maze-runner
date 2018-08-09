@@ -65,9 +65,12 @@ class Individual(walker_base.WalkerBase):
         self.genes = []        
         self.current_location = self._maze.start()
         self.color = color
-        self.moves = DIRECTIONS    
+        self.moves = DIRECTIONS
+        self.eachDistance = 0.000000000 
         self.distance = 0.000000000 
-        for x in range(gene_length):
+        self.stay = 0
+        self.back = 0
+        for x in xrange(0,gene_length,1):
             self.genes.append(random.choice(self.moves))
                         
 
@@ -77,8 +80,8 @@ class Gen_algorithm(walker_base.WalkerBase):
     def __init__(self, maze):
         super(Gen_algorithm, self).__init__(maze, maze.start())        
         self._delay = G_DELAY
-        self.gene_length = 20       #steps for each individual
-        self.population = [Individual(self._maze, self.gene_length, individual_color[x]) for x in range(10)]
+        self.gene_length = G_GEN0_STEPS       # gen 0 steps for each individual
+        self.population = [Individual(self._maze, self.gene_length, individual_color[x%10]) for x in xrange(0,G_INDIVIDUAL)]
         self.fittest = None
         self.secondFit = None
         self.fittestG = []
@@ -95,83 +98,117 @@ class Gen_algorithm(walker_base.WalkerBase):
                 if move is not None:
                     individual.current_location = move
                     individual.steps = individual.steps + 1
+                    d = self.calDistance(individual)
+                    if (d < individual.eachDistance):
+                        individual.back = individual.back + 1
+                    individual.eachDistance = d
+                else:
+                    individual.stay = individual.stay + 1
                 x,y = individual.current_location.get_position()
                 self._maze.paint_individual(x, y, individual.color)
+                if individual.current_location == self._maze.finish():
+                    self._maze.individualSolved = True
+                    self.currentStep = self.gene_length
             self.currentStep = self.currentStep + 1
         else:
             self._isDone = True
-            self.updateAllFitness()
-            self.prepareNextGen()
-            for individual in self.population:
-                print individual.color + ' ' + str(individual.fitness)
+                
     
-    def calDistance(self, cell):
-        cell.distance = 0.0000000 + len(self._maze.solvedPath) - self._maze.solvedPath.index(cell)
+    def calDistance(self, individual):
+        individual.distance = 0.0000000 + len(self._maze.solvedPath) - self._maze.solvedPath.index(individual.current_location)
         
     def updateAllFitness(self):
         for individual in self.population:
-            individual.distance = self.calDistance(individual.current_location)
-            individual.fitness = individual.distance + (individual.distance / individual.steps)
-    
-    def updateFitness(self, individual):
-        individual.distance = self.calDistance(individual.current_location)
-        individual.fitness = individual.distance + (individual.distance / individual.steps)
+            self.calDistance(individual)
+            if individual.steps == 0:
+                individual.fitness = -1
+            else:
+                individual.fitness = individual.distance + (individual.distance / individual.steps) - individual.stay/self.gene_length - individual.back/self.gene_length
+            if individual.fitness < 0:
+                individual.genes = []
+                for x in xrange(0,self.gene_length):
+                    individual.genes.append(random.choice(individual.moves))
 
     def prepareNextGen(self):
+        for x in self.population:
+            x.current_location = self._maze.start()
+            x.stay = 0
+            x.back = 0
+            print str(self.population.index(x)) + ' : ' + str(x.distance) + ' : ' + str(x.fitness)
+        self._isDone = False
+        self.currentStep = 0
         if self.fittest.distance / self.gene_length >= 0.70:
-            new_gene_length = self.gene_length * 2
+            # new_gene_length = self.gene_length * 2
+            new_gene_length = self.gene_length + G_GEN0_STEPS
             diff = new_gene_length - self.gene_length
-            for x in range(diff):
-                self.genes.append(random.choice(self.moves))
+            self.gene_length = new_gene_length
+            for individual in self.population:
+                for x in xrange(0,diff):
+                    individual.genes.append(random.choice(individual.moves))
             
     def getFittest(self):
         pq = Q.PriorityQueue()
         
     
         for x in self.population:
-            pq.put((100/x.fitness),x)
+            if x.fitness <= 0:
+                x.fitness = 1
+            pq.put((100/x.fitness,x))
+            if x.fitness == 1:
+                x.fitness = -1
         
-        self.fittest = pq.get()
-        self.secondFit = pq.get()          
+        nn1, self.fittest = pq.get()
+        nn2, self.secondFit = pq.get()   
+
+        for x in xrange(0,G_INDIVIDUAL):
+            if not pq.empty():
+                nn3, self.lastFit = pq.get()
+            else:
+                break       
             
     def selection_crossover(self):               
         self.getFittest()
         
+        self.fittestG = []
+        self.secondFittestG = []
         self.fittestG = self.fittest.genes
         self.secondFittestG= self.secondFit.genes
         
-        for x in pq:
-            if not pq.empty():
-                self.lastFit = pq.get()
         
         for x in self.population:
             if x == self.lastFit:
+                x.genes = []
                 x.genes = self.fittestG
         
         #crossover
-        crossOverPoint = random.randint(1, self.gene_length)
+        crossOverPoint = random.randint(0, self.gene_length-1)
+        # crossOverPoint = self.gene_length / 2 - 1
         
-        for x in range(crossOverPoint):
+        for x in xrange(0,crossOverPoint,1):
             temp = self.fittestG[x]
             self.fittestG[x] = self.secondFittestG[x]
             self.secondFittestG[x] = temp
             
         for x in self.population:
             if x == self.fittest:
+                x.genes = []
                 x.genes = self.fittestG
             elif x == self.secondFit:
+                x.genes = []
                 x.genes = self.secondFittestG
                 
     
     def mutation(self):
         
-        mutationPoint1 = random.randint(1, self.gene_length)
-        mutationPoint2 = random.randint(1, self.gene_length)
+        mutationPoint1 = random.randint(0, self.gene_length-1)
+        mutationPoint2 = random.randint(0, self.gene_length-1)
         
         self.getFittest()
         #========================================================Fittest mutation
+        self.fittestG = []
         self.fittestG = self.fittest.genes
-        self.secondFittestG= self.secondFit.genes        
+        self.secondFittestG = []
+        self.secondFittestG = self.secondFit.genes        
         
         
         temp = self.fittestG[mutationPoint1]
@@ -179,8 +216,8 @@ class Gen_algorithm(walker_base.WalkerBase):
         self.fittestG[mutationPoint2] = temp
         #=========================================================Second Fittest mutation
         
-        mutationPoint1 = random.randint(1, self.gene_length)
-        mutationPoint2 = random.randint(1, self.gene_length)        
+        mutationPoint1 = random.randint(0, self.gene_length-1)
+        mutationPoint2 = random.randint(0, self.gene_length-1)        
         
         temp = self.secondFittestG[mutationPoint1]
         self.secondFittestG[mutationPoint1] = self.secondFittestG[mutationPoint2]  
@@ -188,8 +225,10 @@ class Gen_algorithm(walker_base.WalkerBase):
          
         for x in self.population:
             if x == self.fittest:
+                x.genes = []
                 x.genes = self.fittestG
             elif x == self.secondFit:
+                x.genes = []
                 x.genes = self.secondFittestG
         
         
