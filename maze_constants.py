@@ -5,16 +5,16 @@ Constant values for the maze program
 
 import sys
 
-DELAY = 5   # milliseconds
-G_DELAY = 0
+DELAY = 10   # milliseconds
+G_DELAY = 5
 G_INDIVIDUAL = 10
 G_GEN0_STEPS = 20
 
 CELL_SIZE = 30      # pixels
 # includes space for walls, so subtract 2 ultimately
 
-XCELLS = 10
-YCELLS = 10
+XCELLS = 20
+YCELLS = 20
 MAZE_HEIGHT = YCELLS * CELL_SIZE + 1
 MAZE_WIDTH = XCELLS * CELL_SIZE + 1
 if XCELLS * YCELLS > sys.getrecursionlimit():

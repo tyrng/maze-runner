@@ -24,6 +24,7 @@ class Maze(Tk.Canvas):
 
     def __init__(self, frame):
         #Genetic Algorithm trigger
+        self.dotList = []
         self.gAlgorithm = ''
         self.solvedPath = []
         self.individualSolved = False
@@ -136,6 +137,8 @@ class Maze(Tk.Canvas):
         self._walker = walkClass(self)
 
         while(gen_state == False):
+                       
+            
             print '///////////////////////////////////////////'
             print "Generation: " + str(self.generation)
             print '///////////////////////////////////////////'
@@ -143,7 +146,7 @@ class Maze(Tk.Canvas):
 
             #self.cleanPath(G_SOLVED_PATH)        
 
-            self.after(G_DELAY, self.gen_run())
+            self.after(DELAY, self.gen_run())
 
             self._walker.updateAllFitness()
 
@@ -304,7 +307,7 @@ class Maze(Tk.Canvas):
         """Return the entire array; useful for certain walking functions"""
         return self._cells
 
-    def clean(self):
+    def clean(self):        
         """Return every cell to a default color"""
         self.count = 0
         del self.successPath[:]
@@ -370,7 +373,9 @@ class Maze(Tk.Canvas):
         bottomRight = (topLeft[0] + CELL_SIZE - 2, topLeft[1] + CELL_SIZE - 2)
         corners = [topLeft, bottomRight]        
         
-        self.create_oval(corners, fill=color, outline=color)
+        dot = self.create_oval(corners, fill=color, outline=color)   #DOTLIST STORED HERE
+        self.dotList.append(dot)
+        
         self.update()
 
     def start(self):

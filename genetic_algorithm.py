@@ -91,7 +91,14 @@ class Gen_algorithm(walker_base.WalkerBase):
             
     def step(self):
         if self.currentStep < self.gene_length:
-            self._maze.cleanDot(G_SOLVED_PATH)
+            #DELETION
+            for d in self._maze.dotList:
+                if d is not None:
+                    self._maze.delete(d)
+            
+            self._maze.dotList = [] 
+           
+            #self._maze.cleanDot(G_SOLVED_PATH)      #CLEAN DOT REPLACEMENT
             for individual in self.population:
 
                 move = self._cell.move_individual(self._maze, individual.current_location, individual.genes[self.currentStep])
