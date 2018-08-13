@@ -167,7 +167,7 @@ class Maze(Tk.Canvas):
         mutationRate = 2
         oldGeneLength = self._walker.gene_length
         
-        self.randomG = random.randint(2, len(self.solvedPath)-1)
+        self.randomG = random.randint(1, len(self.solvedPath)-2)
         
         while(gen_state == False):
             #Reset back dead status
@@ -288,6 +288,16 @@ class Maze(Tk.Canvas):
         self.after(self._walker.delay(), self._run)     #Run solution
 
     def rebuild(self):
+        #CLEAR ALL DOTS AND TRAPS
+        for x in self.trapList:
+                if x is not None:
+                    self.delete(x)   
+                    
+        for d in self.dotList:
+                if d is not None:
+                    self._maze.delete(d)
+        
+        
         """Clean and rebuild the maze"""
         self.count=0
         del self.solvedPath[:]

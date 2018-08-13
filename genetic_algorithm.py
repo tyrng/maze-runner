@@ -325,7 +325,7 @@ class Gen_algorithm(walker_base.WalkerBase):
             for individual in self.population:                            
                 
                 for x in xrange(0,int(superPercentage)): 
-                    r1 = random.randint(self.gene_length/2, self.gene_length)
+                    r1 = random.randint(self.gene_length/2, self.gene_length-1)
                     individual.genes[r1] = random.choice(individual.moves)
                     
             return True
@@ -346,6 +346,9 @@ class Gen_algorithm(walker_base.WalkerBase):
         
         for x in self._maze.solvedPath:
             if(randomG == count):
+                self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
+                self.trapCellList.append(x)
+            elif((randomG - 2) == count):
                 self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
                 self.trapCellList.append(x)
                                                 
