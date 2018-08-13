@@ -213,6 +213,9 @@ class Cell(Piece):
                 return
         print self, otherCell
         raise MazeError("These two cells don't touch")
+        
+        
+    
 
 class MazeError(Exception):
     pass

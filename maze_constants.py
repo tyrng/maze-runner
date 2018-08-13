@@ -13,8 +13,12 @@ G_GEN0_STEPS = 20
 CELL_SIZE = 30      # pixels
 # includes space for walls, so subtract 2 ultimately
 
-XCELLS = 20
-YCELLS = 20
+#trap constants
+T_ON = 'black'
+T_OFF = 'yellow'
+
+XCELLS = 10
+YCELLS = 10
 MAZE_HEIGHT = YCELLS * CELL_SIZE + 1
 MAZE_WIDTH = XCELLS * CELL_SIZE + 1
 if XCELLS * YCELLS > sys.getrecursionlimit():

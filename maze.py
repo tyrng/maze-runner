@@ -23,8 +23,14 @@ import sys
 class Maze(Tk.Canvas):
 
     def __init__(self, frame):
-        #Genetic Algorithm trigger
+        #trap status
+        self.trapList = []
+        self.tCount = 0
+        self.tStatus = False
+        
+        #List of individual dots
         self.dotList = []
+        
         self.gAlgorithm = ''
         self.solvedPath = []
         self.individualSolved = False
@@ -74,14 +80,35 @@ class Maze(Tk.Canvas):
             else:
                 self.prompt()
 
+#GEN RUN=======================================================================
+
     def gen_run(self):     #runs solution
+        #TRAP SWITCH
+        if(self.tCount == 0):
+            #delete trap list
+            for x in self.trapList:
+                if x is not None:
+                    self.delete(x)
+            #set count back to 3 (delay)
+            self.tCount = 3
+            if(self.tStatus == False):
+                self.tStatus = True
+            elif(self.tStatus == True):
+                self.tStatus = False
+            #create trap object
+            self._walker.setTrap(self.tStatus, self.randomG)
+            
+        
+        self.tCount = self.tCount - 1
+        #===========
         if not self._walker.is_done():
+            
             self._walker.step()
             self.after(G_DELAY, self.gen_run())
         else:
             self.lift('corners')
                 
-    #Runs genetic algorithm                
+#Runs genetic algorithm                
     def g_run(self):
         if not self._walker.is_done():
             self._walker.step()
@@ -136,8 +163,18 @@ class Maze(Tk.Canvas):
             
         self._walker = walkClass(self)
 
+        #Mutation variation        
+        mutationRate = 2
+        oldGeneLength = self._walker.gene_length
+        
+        self.randomG = random.randint(2, len(self.solvedPath)-1)
+        
         while(gen_state == False):
-                       
+            #Reset back dead status
+            self.tStatus = False            
+            
+            for x in self._walker.population:
+                x.dead = False
             
             print '///////////////////////////////////////////'
             print "Generation: " + str(self.generation)
@@ -149,17 +186,28 @@ class Maze(Tk.Canvas):
             self.after(DELAY, self.gen_run())
 
             self._walker.updateAllFitness()
-
+            self._walker.getFittest()       #get Fittest here
             self._walker.printTable()
             
-            const = random.randint(1,2) # print const
+            
+            #mutation experiment            
+            newGeneLength = oldGeneLength + 20
+            if(newGeneLength <= self._walker.gene_length):
+                mutationRate = mutationRate + 1
+                oldGeneLength = newGeneLength
+                            
+            
+            const = random.randint(1, mutationRate) # print const
             mutation = False
             if (const == 2):
-                print 'MUTATION : ON'
+                print 'MUTATION      : ON'
                 mutation = True
             else:
-                print 'MUTATION : OFF'
+                print 'MUTATION      : OFF'
                 mutation = False
+                
+            
+            print 'MUTATION RATE : ' + "%.2f" % ((1.00/mutationRate) * 100.00) + '%'
             print '==========================================='
                 
             if self.individualSolved:
@@ -377,6 +425,30 @@ class Maze(Tk.Canvas):
         self.dotList.append(dot)
         
         self.update()
+
+    #create trap object========================================================
+    def printTrap(self, x, y, color, op_color):
+        
+        
+#        topLeft = (x * CELL_SIZE + 1, y * CELL_SIZE + 1)
+#        bottomRight = (topLeft[0] + CELL_SIZE - 2, topLeft[1] + CELL_SIZE - 2)  
+#        
+#        midTopLine = [bottomRight[0]/ 2, topLeft[1]]
+#        midBotLine = [bottomRight[0]/ 2, bottomRight[1]]
+#        midLeftLine = [topLeft[0], bottomRight[1]/ 2]
+#        midRightLine = [bottomRight[0], bottomRight[1]/ 2]
+        
+        top = [(x * CELL_SIZE) + ((CELL_SIZE + 1)/ 2), (y * CELL_SIZE + 1)]
+        right = [(x * CELL_SIZE) + CELL_SIZE - 1, (y * CELL_SIZE) + ((CELL_SIZE + 1)/ 2)]
+        bottom = [(x * CELL_SIZE) + ((CELL_SIZE + 1)/ 2), (y * CELL_SIZE) + CELL_SIZE - 1]
+        left = [(x * CELL_SIZE + 1), (y * CELL_SIZE) + ((CELL_SIZE + 1)/ 2)]
+        
+        #self.trapList.append(self.create_polygon(midLeftLine, midTopLine, midRightLine, midBotLine, fill=color, outline=op_color))
+        self.trapList.append(self.create_polygon(left, top, right, bottom, fill=color, outline=op_color))
+            
+        self.update()
+        
+
 
     def start(self):
         return self._cells[0][0]
