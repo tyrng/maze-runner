@@ -224,6 +224,13 @@ class Maze(Tk.Canvas):
                 for x in xrange(0, self._walker.gene_length, 5):
                     self._walker.mutation()
 
+            #SUPER MUTATION
+            if(self._walker.superMutation()):
+                print 'SUPER MUTATION : ON'
+            else:
+                print 'SUPER MUTATION : OFF'
+            print '==========================================='
+            
             self._walker.prematureConvergence()
 
             self._walker.prepareNextGen()

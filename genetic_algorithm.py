@@ -93,6 +93,8 @@ class Gen_algorithm(walker_base.WalkerBase):
         self.leastFittest = []
         self.currentStep = 0
         self.oldBestFit = [] # Premature Convergence
+        
+        self.oldDead = 0
             
     def step(self):
         if self.currentStep < self.gene_length:
@@ -248,14 +250,20 @@ class Gen_algorithm(walker_base.WalkerBase):
                 
     def prematureConvergence(self):
         self.getFittest()
-        self.oldBestFit.append(self.fittest.fitness) # float
+        self.oldBestFit.append(self.fittest) # float        
+        
         if len(self.oldBestFit) >= 3: # check at least 3 generations
             one = self.oldBestFit.pop()
             two = self.oldBestFit.pop()
-            three = self.oldBestFit.pop()
-            if (one == two and two == three and one == three):
+            three = self.oldBestFit.pop()                        
+                
+            
+            if (one.fitness == two.fitness and two.fitness == three.fitness and one.fitness == three.fitness):                                    
                 self.oldBestFit = []
-
+                #DEAD STOPPER
+                if(one.dead == True and two.dead == True and three.dead == True):
+                    return None
+                
                 # ADD GENE_LENGTH
                 diff = 10
                 new_gene_length = self.gene_length + diff
@@ -302,6 +310,27 @@ class Gen_algorithm(walker_base.WalkerBase):
                 x.genes = []
                 x.genes = list(self.secondFittestG)
     
+    #SUPER MUTATION ===========================================================
+    def superMutation(self):
+        notDead = False
+        
+        for x in self.population:
+            if(x.dead == False):
+                notDead = True
+        
+        if(notDead == False):
+            
+            superPercentage = self.gene_length * 0.2
+            
+            for individual in self.population:                            
+                
+                for x in xrange(0,int(superPercentage)): 
+                    r1 = random.randint(self.gene_length/2, self.gene_length)
+                    individual.genes[r1] = random.choice(individual.moves)
+                    
+            return True
+        
+        return False
     
     #TRAP FUNCTIONS
     def setTrap(self, status, randomG):
