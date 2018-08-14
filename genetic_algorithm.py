@@ -7,6 +7,7 @@ import walker_base
 from maze_constants import *
 import Queue as Q
 import time
+import copy
 
 
 marker = object()
@@ -268,7 +269,7 @@ class Gen_algorithm(walker_base.WalkerBase):
                 
     def prematureConvergence(self):
         self.getFittest()
-        self.oldBestFit.append(self.fittest) # float        
+        self.oldBestFit.append(copy.copy(self.fittest)) # float        
         
         if len(self.oldBestFit) >= 3: # check at least 3 generations
             one = self.oldBestFit.pop()
@@ -276,12 +277,13 @@ class Gen_algorithm(walker_base.WalkerBase):
             three = self.oldBestFit.pop()                        
                 
             
-            if (one.fitness == two.fitness and two.fitness == three.fitness and one.fitness == three.fitness): 
-                print 'PREMATURE CONVERGENCE OCCUR'                                   
+            if (one.fitness == two.fitness and two.fitness == three.fitness and one.fitness == three.fitness):   
+                for x in self.oldBestFit:
+                    del x                        
                 self.oldBestFit = []
                 #DEAD STOPPER
                 if(one.dead == True and two.dead == True and three.dead == True):
-                    return None
+                    return False
                 
                 # ADD GENE_LENGTH
                 diff = 10
@@ -290,12 +292,14 @@ class Gen_algorithm(walker_base.WalkerBase):
                 for individual in self.population:
                     for x in xrange(0,diff):
                         individual.genes.append(random.choice(individual.moves))
+                return True
                                         
 
             else:
                 self.oldBestFit.append(three)
                 self.oldBestFit.append(two)
                 self.oldBestFit.append(one)
+                return False
 
     def mutation(self):
         

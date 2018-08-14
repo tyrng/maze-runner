@@ -249,8 +249,11 @@ class Maze(Tk.Canvas):
             print '==========================================='   
             print 'GENE LENGTH: ' + str(self._walker.gene_length)
 
-            
-            self._walker.prematureConvergence()
+            print '===========================================' 
+            if(self._walker.prematureConvergence()):
+                print 'PREMATURE CONVERGENCE: ON'
+            else:
+                print 'PREMATURE CONVERGENCE: OFF'
             
 
             self._walker.prepareNextGen()
@@ -315,7 +318,7 @@ class Maze(Tk.Canvas):
                     
         for d in self.dotList:
                 if d is not None:
-                    self._maze.delete(d)
+                    self.delete(d)
         
         
         """Clean and rebuild the maze"""
