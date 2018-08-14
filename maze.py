@@ -19,6 +19,7 @@ from mouse import RandomMouse
 from genetic_algorithm import *
 import random
 import sys
+import time
 
 class Maze(Tk.Canvas):
 
@@ -88,14 +89,18 @@ class Maze(Tk.Canvas):
             #delete trap list
             for x in self.trapList:
                 if x is not None:
-                    self.delete(x)
+                    self.delete(x)            
+                
             #set count back to 3 (delay)
-            self.tCount = 3
+            self.tCount = 4
             if(self.tStatus == False):
                 self.tStatus = True
             elif(self.tStatus == True):
                 self.tStatus = False
             #create trap object
+            self.trapList = []
+            self._walker.trapCellList = []
+            
             self._walker.setTrap(self.tStatus, self.randomG)
             
         
@@ -174,8 +179,10 @@ class Maze(Tk.Canvas):
             self.tStatus = False            
             
             for x in self._walker.population:
+                x.furthestDistance = 0 
+                x.deadSteps = 0
                 x.dead = False
-            
+            #======================
             print '///////////////////////////////////////////'
             print "Generation: " + str(self.generation)
             print '///////////////////////////////////////////'
@@ -208,7 +215,8 @@ class Maze(Tk.Canvas):
                 
             
             print 'MUTATION RATE : ' + "%.2f" % ((1.00/mutationRate) * 100.00) + '%'
-            print '==========================================='
+            print '==========================================='            
+            
                 
             if self.individualSolved:
                 gen_state = True
@@ -223,15 +231,27 @@ class Maze(Tk.Canvas):
             if (mutation):
                 for x in xrange(0, self._walker.gene_length, 5):
                     self._walker.mutation()
-
-            #SUPER MUTATION
-            if(self._walker.superMutation()):
-                print 'SUPER MUTATION : ON'
+                            #SUPER MUTATION                    
+                if(self._walker.superMutation()):
+                    # ADD GENE_LENGTH
+                    diff = 10
+                    new_gene_length = self._walker.gene_length + diff
+                    self._walker.gene_length = new_gene_length
+                    for individual in self._walker.population:
+                        for x in xrange(0,diff):
+                            individual.genes.append(random.choice(individual.moves))
+                    print 'SUPER MUTATION: ON'
+                else:
+                    print 'SUPER MUTATION: OFF'
             else:
-                print 'SUPER MUTATION : OFF'
-            print '==========================================='
+                 print 'SUPER MUTATION: OFF'
+            
+            print '==========================================='   
+            print 'GENE LENGTH: ' + str(self._walker.gene_length)
+
             
             self._walker.prematureConvergence()
+            
 
             self._walker.prepareNextGen()
         

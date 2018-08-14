@@ -6,6 +6,7 @@ import random
 import walker_base
 from maze_constants import *
 import Queue as Q
+import time
 
 
 marker = object()
@@ -37,7 +38,7 @@ class getAllPaths(walker_base.WalkerBase):
                 # Start cell should point to None
                 self._maze.paint(current, G_SOLVED_PATH)
                 
-                #test shape                       
+                                      
                 #    
                 #store in solvedPath
                 self._maze.solvedPath.append(current)
@@ -61,6 +62,9 @@ class Individual(walker_base.WalkerBase):
         super(Individual, self).__init__(maze, maze.start())
         #dead status
         self.dead = False
+        self.deadSteps = 0
+        self.furthestDistance = 0
+        
         self.fitness = 0.00000000
         self.steps = 0
         self.genes = []        
@@ -85,7 +89,7 @@ class Gen_algorithm(walker_base.WalkerBase):
         
         self._delay = G_DELAY
         self.gene_length = G_GEN0_STEPS       # gen 0 steps for each individual
-        self.population = [Individual(self._maze, self.gene_length, individual_color[x%10]) for x in xrange(0,G_INDIVIDUAL)]
+        self.population = [Individual(self._maze, self.gene_length, individual_color[x%10]) for x in xrange(0,G_INDIVIDUAL)]        
         self.fittest = None
         self.secondFit = None
         self.fittestG = []
@@ -116,14 +120,24 @@ class Gen_algorithm(walker_base.WalkerBase):
                     individual.current_location = move
                     individual.steps = individual.steps + 1
                     
+                    #get furthest distance
+                    self.calDistance(individual)
+                    if(individual.furthestDistance < individual.distance):
+                        individual.furthestDistance = individual.distance
+                    
                     for trap in self.trapCellList:
                         if(individual.current_location == trap):
                             if(self._maze.tStatus):
-                                individual.dead = True                                
+                                individual.dead = True 
+                                #dead steps
+                                individual.deadSteps = self.currentStep
                    
 #                else:
 #                    individual.stay = individual.stay + 1
                 x,y = individual.current_location.get_position()
+                
+                #dot delay
+                time.sleep(.005)
                 self._maze.paint_individual(x, y, individual.color)
                 if individual.current_location == self._maze.finish():
                     self._maze.individualSolved = True
@@ -136,16 +150,16 @@ class Gen_algorithm(walker_base.WalkerBase):
     def printTable(self):
         averageFitness = 0
         averageDistance = 0
-        print '#' + ' : ' + ' D. ' + ' : ' + 'Fitness'
+        print '#' + ' : ' + ' D. ' + ' : ' + 'Fitness' + ':' + 'Penalty'
         for x in self.population:
-            print str(self.population.index(x)) + ' : ' + str(x.distance) + ' : ' + "%.2f" % x.fitness
+            print str(self.population.index(x)) + ' : ' + str(x.distance) + ' : ' + "%.2f" % x.fitness + '    :' + "%.2f" % (x.deadSteps/ x.distance)
             averageFitness = averageFitness + x.fitness / len(self.population)
             averageDistance = averageDistance + x.distance / len(self.population)
             
         print '==========================================='
         print 'AVERAGE DISTANCE = ' + "%.2f" % (averageDistance)
         print 'AVERAGE FITNESS  = ' + "%.2f" % (averageFitness)
-        print 'Fittest Score    = ' + "%.2f" % (self.fittest.fitness)
+        print 'Fittest Score    = ' + str(self.fittest.fitness)
         print '==========================================='
 
     def calDistance(self, individual):
@@ -156,15 +170,19 @@ class Gen_algorithm(walker_base.WalkerBase):
     def updateAllFitness(self):
         for individual in self.population:
             self.calDistance(individual)
+            #update distance if 0
+            if individual.distance == 0:
+                individual.distance = 1                
+            
             if individual.steps == 0:
                 individual.fitness = -1
             else:
                 #FITNESS SCORE PENALTY
                 if(individual.dead):
-                    penalty = 1
+                    penalty = 0.2
                 else:
                     penalty = 0
-                individual.fitness = individual.distance + (individual.distance / individual.steps) - penalty
+                individual.fitness = individual.distance + (individual.distance / individual.steps) - ((individual.deadSteps/ individual.furthestDistance) * penalty)
             if individual.fitness < 0:
                 individual.genes = []
                 for x in xrange(0,self.gene_length):
@@ -195,7 +213,7 @@ class Gen_algorithm(walker_base.WalkerBase):
     
         for x in self.population:
             if x.fitness <= 0:
-                x.fitness = 1.0
+                x.fitness = 1.0            
             pq.put((100/x.fitness,x))
             if x.fitness == 1.0:
                 x.fitness = -1.0
@@ -258,7 +276,8 @@ class Gen_algorithm(walker_base.WalkerBase):
             three = self.oldBestFit.pop()                        
                 
             
-            if (one.fitness == two.fitness and two.fitness == three.fitness and one.fitness == three.fitness):                                    
+            if (one.fitness == two.fitness and two.fitness == three.fitness and one.fitness == three.fitness): 
+                print 'PREMATURE CONVERGENCE OCCUR'                                   
                 self.oldBestFit = []
                 #DEAD STOPPER
                 if(one.dead == True and two.dead == True and three.dead == True):
@@ -271,6 +290,7 @@ class Gen_algorithm(walker_base.WalkerBase):
                 for individual in self.population:
                     for x in xrange(0,diff):
                         individual.genes.append(random.choice(individual.moves))
+                                        
 
             else:
                 self.oldBestFit.append(three)
@@ -320,7 +340,8 @@ class Gen_algorithm(walker_base.WalkerBase):
         
         if(notDead == False):
             
-            superPercentage = self.gene_length * 0.2
+            superPercentage = self.gene_length * 0.1
+            
             
             for individual in self.population:                            
                 
@@ -348,7 +369,7 @@ class Gen_algorithm(walker_base.WalkerBase):
             if(randomG == count):
                 self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
                 self.trapCellList.append(x)
-            elif((randomG - 2) == count):
+            elif((randomG - 1) == count):
                 self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
                 self.trapCellList.append(x)
                                                 
