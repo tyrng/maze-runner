@@ -114,6 +114,7 @@ class Gen_algorithm(walker_base.WalkerBase):
             #self._maze.cleanDot(G_SOLVED_PATH)      #CLEAN DOT REPLACEMENT
             for individual in self.population:                                             
                 if(individual.dead):
+                    
                     move = None
                 else:
                     move = self._cell.move_individual(self._maze, individual.current_location, individual.genes[self.currentStep])                
@@ -135,13 +136,16 @@ class Gen_algorithm(walker_base.WalkerBase):
                                 individual.genes[index] = random.choice(individual.moves)
                                 #dead steps
                                 individual.deadSteps = self.currentStep
+                                for d in self._maze.dotList:
+                                    if d is not None:
+                                        self._maze.delete(d)
                    
 #                else:
 #                    individual.stay = individual.stay + 1
                 x,y = individual.current_location.get_position()
                 
                 #dot delay
-                time.sleep(.001)
+                #time.sleep(.001)
                 self._maze.paint_individual(x, y, individual.color)
                 if individual.current_location == self._maze.finish():
                     self._maze.individualSolved = True
@@ -163,7 +167,7 @@ class Gen_algorithm(walker_base.WalkerBase):
         print '==========================================='
         print 'AVERAGE DISTANCE = ' + "%.2f" % (averageDistance)
         print 'AVERAGE FITNESS  = ' + "%.2f" % (averageFitness)
-        print 'Fittest Score    = ' + str(self.fittest.fitness)
+        print 'Fittest Score    = ' + "%.2f" % (self.fittest.fitness)
         print '==========================================='
 
     def calDistance(self, individual):
@@ -279,7 +283,7 @@ class Gen_algorithm(walker_base.WalkerBase):
         if len(self.oldBestFit) >= 3: # check at least 3 generations
             one = self.oldBestFit.pop()
             two = self.oldBestFit.pop()
-            three = self.oldBestFit.pop()                        
+            three = self.oldBestFit.pop()                                    
                 
             
             if (one.distance == two.distance and two.distance == three.distance and one.distance == three.distance):   
@@ -291,7 +295,7 @@ class Gen_algorithm(walker_base.WalkerBase):
                     return False
                 
                 # ADD GENE_LENGTH
-                diff = 10
+                diff = 20
                 new_gene_length = self.gene_length + diff
                 self.gene_length = new_gene_length
                 for individual in self.population:
@@ -374,7 +378,7 @@ class Gen_algorithm(walker_base.WalkerBase):
         return False
     
     #TRAP FUNCTIONS
-    def setTrap(self, status, randomG):
+    def setTrap(self, status, r1, r2, r3):
         
         count = 0        
                 
@@ -384,12 +388,17 @@ class Gen_algorithm(walker_base.WalkerBase):
         else:
             color = T_OFF
             op_color = T_ON
+                        
+            
         
         for x in self._maze.solvedPath:
-            if(randomG == count):
+            if(r1 == count):
                 self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
                 self.trapCellList.append(x)
-            elif((randomG - 1) == count):
+            elif(r2 == count):
+                self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
+                self.trapCellList.append(x)
+            elif(r3 == count):
                 self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
                 self.trapCellList.append(x)
                                                 

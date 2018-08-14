@@ -5,10 +5,10 @@ Constant values for the maze program
 
 import sys
 
-DELAY = 10   # milliseconds
+DELAY = 5   # milliseconds
 G_DELAY = 5
-G_INDIVIDUAL = 10
-G_GEN0_STEPS = 20
+G_INDIVIDUAL = 20
+G_GEN0_STEPS = 40
 
 CELL_SIZE = 30      # pixels
 # includes space for walls, so subtract 2 ultimately

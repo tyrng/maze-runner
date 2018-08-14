@@ -101,7 +101,7 @@ class Maze(Tk.Canvas):
             self.trapList = []
             self._walker.trapCellList = []
             
-            self._walker.setTrap(self.tStatus, self.randomG)
+            self._walker.setTrap(self.tStatus, self.randomG, self.randomG2, self.randomG3)
             
         
         self.tCount = self.tCount - 1
@@ -169,10 +169,12 @@ class Maze(Tk.Canvas):
         self._walker = walkClass(self)
 
         #Mutation variation        
-        mutationRate = 3
+        mutationRate = 4
         oldGeneLength = self._walker.gene_length
         
-        self.randomG = random.randint(1, len(self.solvedPath)-2)
+        self.randomG = random.randint(3, len(self.solvedPath)-3)
+        self.randomG2 = random.randint(3, len(self.solvedPath)-3)
+        self.randomG3 = random.randint(3, len(self.solvedPath)-3)
         
         while(gen_state == False):
             #Reset back dead status
