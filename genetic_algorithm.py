@@ -93,6 +93,7 @@ class Gen_algorithm(walker_base.WalkerBase):
         self.population = [Individual(self._maze, self.gene_length, individual_color[x%10]) for x in xrange(0,G_INDIVIDUAL)]        
         self.fittest = None
         self.secondFit = None
+        self.lastFit = None
         self.fittestG = []
         self.secondFittestG = []
         self.leastFittest = []
