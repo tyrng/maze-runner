@@ -169,7 +169,7 @@ class Maze(Tk.Canvas):
         self._walker = walkClass(self)
 
         #Mutation variation        
-        mutationRate = 2
+        mutationRate = 3
         oldGeneLength = self._walker.gene_length
         
         self.randomG = random.randint(1, len(self.solvedPath)-2)
@@ -198,7 +198,7 @@ class Maze(Tk.Canvas):
             
             
             #mutation experiment            
-            newGeneLength = oldGeneLength + 20
+            newGeneLength = oldGeneLength + 10
             if(newGeneLength <= self._walker.gene_length):
                 mutationRate = mutationRate + 1
                 oldGeneLength = newGeneLength
@@ -232,19 +232,19 @@ class Maze(Tk.Canvas):
                 for x in xrange(0, self._walker.gene_length, 5):
                     self._walker.mutation()
                             #SUPER MUTATION                    
-                if(self._walker.superMutation()):
-                    # ADD GENE_LENGTH
-                    diff = 10
-                    new_gene_length = self._walker.gene_length + diff
-                    self._walker.gene_length = new_gene_length
-                    for individual in self._walker.population:
-                        for x in xrange(0,diff):
-                            individual.genes.append(random.choice(individual.moves))
-                    print 'SUPER MUTATION: ON'
-                else:
-                    print 'SUPER MUTATION: OFF'
-            else:
-                 print 'SUPER MUTATION: OFF'
+#                if(self._walker.superMutation()):
+#                    # ADD GENE_LENGTH
+#                    diff = 10
+#                    new_gene_length = self._walker.gene_length + diff
+#                    self._walker.gene_length = new_gene_length
+#                    for individual in self._walker.population:
+#                        for x in xrange(0,diff):
+#                            individual.genes.append(random.choice(individual.moves))
+#                    print 'SUPER MUTATION: ON'
+#                else:
+#                    print 'SUPER MUTATION: OFF'
+#            else:
+#                 print 'SUPER MUTATION: OFF'
             
             print '==========================================='   
             print 'GENE LENGTH: ' + str(self._walker.gene_length)

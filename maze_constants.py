@@ -17,8 +17,8 @@ CELL_SIZE = 30      # pixels
 T_ON = 'black'
 T_OFF = 'yellow'
 
-XCELLS = 10
-YCELLS = 10
+XCELLS = 20
+YCELLS = 20
 MAZE_HEIGHT = YCELLS * CELL_SIZE + 1
 MAZE_WIDTH = XCELLS * CELL_SIZE + 1
 if XCELLS * YCELLS > sys.getrecursionlimit():

@@ -130,7 +130,9 @@ class Gen_algorithm(walker_base.WalkerBase):
                     for trap in self.trapCellList:
                         if(individual.current_location == trap):
                             if(self._maze.tStatus):
-                                individual.dead = True 
+                                index = self.currentStep - 1
+                                individual.dead = True
+                                individual.genes[index] = random.choice(individual.moves)
                                 #dead steps
                                 individual.deadSteps = self.currentStep
                    
@@ -139,7 +141,7 @@ class Gen_algorithm(walker_base.WalkerBase):
                 x,y = individual.current_location.get_position()
                 
                 #dot delay
-                time.sleep(.005)
+                time.sleep(.001)
                 self._maze.paint_individual(x, y, individual.color)
                 if individual.current_location == self._maze.finish():
                     self._maze.individualSolved = True
@@ -250,7 +252,7 @@ class Gen_algorithm(walker_base.WalkerBase):
         crossOverPoint = random.randint(0, self.gene_length*3/4)
         # crossOverPoint = self.gene_length / 2 - 1
         
-        for x in xrange(0,crossOverPoint,1):
+        for x in xrange(crossOverPoint, self.gene_length):
             temp = self.fittestG[x]
             self.fittestG[x] = self.secondFittestG[x]
             self.secondFittestG[x] = temp
@@ -265,6 +267,8 @@ class Gen_algorithm(walker_base.WalkerBase):
 
         self.fittest.genes = []
         self.fittest.genes = list(self.fittestG)
+                
+        
         self.secondFit.genes = []
         self.secondFit.genes = list(self.secondFittestG)
                 
@@ -278,7 +282,7 @@ class Gen_algorithm(walker_base.WalkerBase):
             three = self.oldBestFit.pop()                        
                 
             
-            if (one.fitness == two.fitness and two.fitness == three.fitness and one.fitness == three.fitness):   
+            if (one.distance == two.distance and two.distance == three.distance and one.distance == three.distance):   
                 for x in self.oldBestFit:
                     del x                        
                 self.oldBestFit = []
@@ -347,12 +351,23 @@ class Gen_algorithm(walker_base.WalkerBase):
             
             superPercentage = self.gene_length * 0.1
             
-            
-            for individual in self.population:                            
+            trapDistance = 0            
+                        
+            for individual in self.population:
+                for loc in self._maze.solvedPath:
+                    if(individual.current_location == loc):
+                        if(trapDistance < individual.distance):
+                            trapDistance = individual.distance
+                                                       
                 
-                for x in xrange(0,int(superPercentage)): 
-                    r1 = random.randint(self.gene_length/2, self.gene_length-1)
-                    individual.genes[r1] = random.choice(individual.moves)
+                if(trapDistance > (len(self._maze.solvedPath)/ 2)):                                    
+                    for x in xrange(0,int(superPercentage)): 
+                        r1 = random.randint(self.gene_length/2, self.gene_length-1)
+                        individual.genes[r1] = random.choice(individual.moves)
+                else:
+                    for x in xrange(0,int(superPercentage)): 
+                        r2 = random.randint(1, self.gene_length/2)
+                        individual.genes[r2] = random.choice(individual.moves)
                     
             return True
         
