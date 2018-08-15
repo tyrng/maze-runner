@@ -8,7 +8,7 @@ import sys
 DELAY = 5   # milliseconds
 G_DELAY = 1
 G_INDIVIDUAL = 20
-G_GEN0_STEPS = 40
+G_GEN0_STEPS = 30
 
 CELL_SIZE = 30      # pixels
 # includes space for walls, so subtract 2 ultimately
@@ -17,8 +17,8 @@ CELL_SIZE = 30      # pixels
 T_ON = 'black'
 T_OFF = 'yellow'
 
-XCELLS = 30
-YCELLS = 30
+XCELLS = 20
+YCELLS = 20
 MAZE_HEIGHT = YCELLS * CELL_SIZE + 1
 MAZE_WIDTH = XCELLS * CELL_SIZE + 1
 if XCELLS * YCELLS > sys.getrecursionlimit():

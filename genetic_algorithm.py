@@ -145,8 +145,12 @@ class Gen_algorithm(walker_base.WalkerBase):
                 x,y = individual.current_location.get_position()
                 
                 #dot delay
-                #time.sleep(.001)
-                self._maze.paint_individual(x, y, individual.color)
+                
+                #SKIP GENERATION
+                if(self._maze.skipGeneration <= self._maze.generation):
+                    #time.sleep(.003)
+                    self._maze.paint_individual(x, y, individual.color)
+                    
                 if individual.current_location == self._maze.finish():
                     self._maze.individualSolved = True
                     self.currentStep = self.gene_length
@@ -393,13 +397,16 @@ class Gen_algorithm(walker_base.WalkerBase):
         
         for x in self._maze.solvedPath:
             if(r1 == count):
-                self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
+                if(self._maze.skipGeneration <= self._maze.generation):                
+                    self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
                 self.trapCellList.append(x)
             elif(r2 == count):
-                self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
+                if(self._maze.skipGeneration <= self._maze.generation):
+                    self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
                 self.trapCellList.append(x)
             elif(r3 == count):
-                self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
+                if(self._maze.skipGeneration <= self._maze.generation):
+                    self._maze.printTrap(x._xLoc, x._yLoc, color, op_color)
                 self.trapCellList.append(x)
                                                 
             count = count + 1
