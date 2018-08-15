@@ -206,8 +206,8 @@ class Gen_algorithm(walker_base.WalkerBase):
         self._isDone = False
         self.currentStep = 0
         #GENE LENGTH UPDATE
-        if self.fittest.distance / self.gene_length >= 0.35:
-            new_gene_length = self.gene_length + 10
+        if (self._maze.generation % 10) == 0:
+            new_gene_length = self.gene_length + 30
             # new_gene_length = self.gene_length + G_GEN0_STEPS
             diff = new_gene_length - self.gene_length
             self.gene_length = new_gene_length
@@ -295,7 +295,7 @@ class Gen_algorithm(walker_base.WalkerBase):
                     return False
                 
                 # ADD GENE_LENGTH
-                diff = 20
+                diff = 30
                 new_gene_length = self.gene_length + diff
                 self.gene_length = new_gene_length
                 for individual in self.population:
@@ -381,7 +381,7 @@ class Gen_algorithm(walker_base.WalkerBase):
     def setTrap(self, status, r1, r2, r3):
         
         count = 0        
-                
+        # r2 = r1 - 1
         if(self._maze.tStatus):
             color = T_ON
             op_color = T_OFF

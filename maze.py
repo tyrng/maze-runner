@@ -178,7 +178,8 @@ class Maze(Tk.Canvas):
         
         while(gen_state == False):
             #Reset back dead status
-            self.tStatus = False            
+            self.tStatus = False 
+            self.tCount = 0           
             
             for x in self._walker.population:
                 x.furthestDistance = 0 
