@@ -156,7 +156,7 @@ class Maze(Tk.Canvas):
         if (choice == 'y'):
             print "Enter which GENERATION to skip to (0 if beginnning): "
             self.skipGeneration = int(raw_input(">> ").strip().lower())
-            
+            self.skipGeneration = self.skipGeneration + 1
             self.gen_loop()  
         else:
             self.prompt()
@@ -266,7 +266,7 @@ class Maze(Tk.Canvas):
             self._walker.prepareNextGen()
         
         #ending screen
-        print "==============================MAZE SOLVED!!!====================================="
+        print "'===============MAZE SOLVED!!!================"
         
         self.individualSolved = False
         self.prompt()
